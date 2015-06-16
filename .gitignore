@@ -1,0 +1,8 @@
+/Library
+/obj
+/UnityVS.ProjectK.CSharp.csproj
+/UnityVS.ProjectK.sln
+/UnityVS.ProjectK.v11.suo
+/Temp
+*.meta
+/Assets/UnityVS

@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Assets.Scripts.ProjectK.Base;
+using Assets.Scripts.ProjectK.Settings;
+using Assets.Scripts.ProjectK.Scenes;
 
 namespace Assets.Scripts.ProjectK
 {
@@ -18,14 +20,17 @@ namespace Assets.Scripts.ProjectK
             if (instance != null)
                 return;
 
-            string resRoot = "file://" + Application.dataPath + "/Resource";
-            ResourceManager.Init(resRoot);
             instance = new Game();
+            string resRoot = "file://" + Application.dataPath + "/Resources";
+            ResourceManager.Init(resRoot);
+            SceneManager.Init();
+            SettingManager.Init(instance.StartGame);
         }
 
-        public string Test()
+        private void StartGame()
         {
-            return "lalala";
+            Log.Debug("Start game!");
+            SceneManager.Instance.SwitchTo();
         }
 
         public static Game Instance

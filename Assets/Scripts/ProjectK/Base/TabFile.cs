@@ -97,6 +97,10 @@ namespace Assets.Scripts.ProjectK.Base
                 string[] values = line.Split(VALUE_SEPERATOR);
                 Log.Assert(values.Length == numTitles);
 
+                // 第一列字段为#的是注释行，跳过。
+                if (values[0] == "#")
+                    continue;
+
                 T obj = new T();
                 for (int j = 0; j < numTitles; ++j)
                 {

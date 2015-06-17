@@ -41,11 +41,17 @@ namespace Assets.Scripts.ProjectK.Base
 
             string error = www.error;
             if (string.IsNullOrEmpty(error))
+            {
                 OnPrepareResource();
+            }
             else
+            {
                 loadFailed = true;
+                Log.Error("资源加载错误! Url:", url, "\nType:", GetType(), "\nFullUrl:", fullUrl, "\nError:", error);
+            }
 
             state = ResourceState.Complete;
+            NotifyComplete();
         }
 
         abstract protected void OnPrepareResource();

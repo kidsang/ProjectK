@@ -52,7 +52,6 @@ namespace Assets.Scripts.ProjectK.Maps
             return GetCellBySceneXY(scenePos.x, scenePos.y);
         }
 
-
         // ----------------
         // for editor
 

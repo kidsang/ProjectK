@@ -57,7 +57,8 @@ namespace Assets.Scripts.ProjectK.Maps
 
         public void AddCell(short x, short y)
         {
-            GameObject cellObject = new GameObject();
+            // todo:
+            GameObject cellObject = Instantiate(Resources.Load<GameObject>("Map/MapCell")) as GameObject;
             cellObject.transform.parent = mapRoot.transform;
             MapCell cell = cellObject.AddComponent<MapCell>();
             cell.Init(loader, x, y);

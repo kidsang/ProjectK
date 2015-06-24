@@ -21,8 +21,11 @@ namespace Assets.Scripts.ProjectK
             node["pony"] = new JsonNode();
             node["pony"][0] = 0;
 
-            String str = node.ToString(true);
+            String str = Json.Stringfy(node, true);
             Log.Info(str);
+
+            JsonNode copy = Json.Parse(str);
+            Log.Info(copy);
         }
 
         void Update()

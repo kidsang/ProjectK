@@ -5,8 +5,11 @@ using System.Text;
 
 namespace Assets.Scripts.ProjectK.Base
 {
-    public class Json
+    public enum JsonNodeType
     {
+        Value,
+        Array,
+        Dictionary,
     }
 
     public class JsonNode
@@ -14,6 +17,17 @@ namespace Assets.Scripts.ProjectK.Base
         private int count;
         private string value;
         private Dictionary<string, JsonNode> values;
+        private JsonNodeType type;
+
+        public JsonNode()
+        {
+            type = JsonNodeType.Value;
+        }
+
+        public JsonNode(JsonNodeType type)
+        {
+            this.type = type;
+        }
 
         public static implicit operator JsonNode(string value)
         {
@@ -50,6 +64,9 @@ namespace Assets.Scripts.ProjectK.Base
 
             set
             {
+                if (type == JsonNodeType.Value)
+                    type = JsonNodeType.Dictionary;
+
                 if (values == null)
                     values = new Dictionary<string, JsonNode>();
 
@@ -83,14 +100,27 @@ namespace Assets.Scripts.ProjectK.Base
 
             set
             {
+                if (type == JsonNodeType.Value)
+                    type = JsonNodeType.Array;
+
                 string key = index.ToString();
                 this[key] = value;
             }
         }
 
+        public bool IsArray
+        {
+            get { return type == JsonNodeType.Array; }
+        }
+
         public bool IsDictionary
         {
-            get { return values != null; }
+            get { return type == JsonNodeType.Dictionary; }
+        }
+
+        public int Count
+        {
+            get { return count; }
         }
 
         public string Value
@@ -128,16 +158,6 @@ namespace Assets.Scripts.ProjectK.Base
             }
         }
 
-        public double AsDouble
-        {
-            get
-            {
-                double ret = 0;
-                double.TryParse(value, out ret);
-                return ret;
-            }
-        }
-
         public bool AsBool
         {
             get
@@ -146,6 +166,17 @@ namespace Assets.Scripts.ProjectK.Base
                 bool.TryParse(value, out ret);
                 return ret;
             }
+        }
+
+        public T AsEnum<T>() where T : struct, IConvertible
+        {
+            Type enumType = typeof(T);
+            Log.Assert(enumType.IsEnum);
+
+            if (string.IsNullOrEmpty(value))
+                return default(T);
+
+            return (T)Enum.Parse(enumType, value);
         }
 
         public override string ToString()
@@ -203,6 +234,163 @@ namespace Assets.Scripts.ProjectK.Base
             builder.Append("}");
 
             return builder.ToString();
+        }
+    }
+
+    public class Json
+    {
+        public static string Stringfy(JsonNode node, bool pretty = false)
+        {
+            return node.ToString(pretty);
+        }
+
+        public static JsonNode Parse(string data)
+        {
+            if (string.IsNullOrEmpty(data))
+                return null;
+
+            JsonNode node = null;
+            Stack<JsonNode> stack = new Stack<JsonNode>();
+            int cur = 0;
+            int begin = 0;
+            int length = data.Length;
+            bool quoted = false;
+            string key = null;
+            string value = null;
+
+            while (cur < length)
+            {
+                switch (data[cur])
+                {
+                    case '{':
+                        if (!quoted)
+                        {
+                            stack.Push(new JsonNode(JsonNodeType.Dictionary));
+                            if (node != null)
+                            {
+                                key = data.Substring(begin, cur - begin + 1);
+                                AddChild(node, key, stack.Peek());
+                            }
+
+                            key = null;
+                            begin = cur + 1;
+                            node = stack.Peek();
+                        }
+                        break;
+
+                    case '[':
+                        if (!quoted)
+                        {
+                            stack.Push(new JsonNode(JsonNodeType.Array));
+                            if (node != null)
+                            {
+                                key = data.Substring(begin, cur - begin + 1);
+                                AddChild(node, key, stack.Peek());
+                            }
+
+                            key = null;
+                            begin = cur + 1;
+                            node = stack.Peek(); ;
+                        }
+                        break;
+
+                    case '}':
+                    case ']':
+                        if (!quoted)
+                        {
+                            if (stack.Count == 0)
+                                Log.Assert(false, "Json解析错误：过多的闭合括号 \"", data[cur], "\" 。");
+
+                            stack.Pop();
+
+                            value = data.Substring(begin, cur - begin + 1);
+                            AddValue(node, key, value);
+                            key = null;
+                            value = null;
+                            begin = cur + 1;
+
+                            if (stack.Count > 0)
+                                node = stack.Peek();
+                        }
+                        break;
+
+                    case ':':
+                        if (!quoted)
+                        {
+                            key = data.Substring(begin, cur - begin + 1);
+                            begin = cur + 1;
+                        }
+                        break;
+
+                    case '"':
+                        quoted = !quoted;
+                        break;
+
+                    case ',':
+                        if (!quoted)
+                        {
+                            AddValue(node, key, value);
+                            key = null;
+                            value = null;
+                            begin = cur + 1;
+                        }
+                        break;
+
+                    case '\r':
+                    case '\n':
+                        begin = cur + 1;
+                        break;
+
+                    case ' ':
+                    case '\t':
+                        if (!quoted)
+                            begin = cur + 1;
+                        break;
+
+                    default:
+                        break;
+                }
+                ++cur;
+            }
+
+            if (quoted)
+                Log.Assert(false, "Json解析错误：双引号错误。");
+
+            return node;
+        }
+
+        private static void AddChild(JsonNode node, string key, JsonNode child)
+        {
+            if (child == null)
+                return;
+
+            if (node.IsDictionary)
+            {
+                if (key == null)
+                    Log.Assert(false, "Json解析错误：空键。value: JsonNode");
+                node[key] = child;
+            }
+            else if (node.IsArray)
+            {
+                node[node.Count] = child;
+            }
+        }
+
+        private static void AddValue(JsonNode node, string key, string value)
+        {
+            if (value == null)
+                return;
+
+            if (node.IsDictionary)
+            {
+                if (key == null)
+                    Log.Assert(false, "Json解析错误：空键。value:", value);
+                node[key] = value;
+            }
+            else if (node.IsArray)
+            {
+                node[node.Count] = value;
+            }
         }
     }
 }

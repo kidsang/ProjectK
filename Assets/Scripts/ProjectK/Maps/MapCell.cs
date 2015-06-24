@@ -71,7 +71,32 @@ namespace Assets.Scripts.ProjectK.Maps
 
         public float CenterY
         {
-            get { return Radius * Sqrt3 * (x + 0.5f * y); }
+            get { return Radius * Sqrt3 * (y + 0.5f * x); }
+        }
+
+        public void ColorTransform(float r = 1, float g = 1, float b = 1, float a = 1)
+        {
+            (renderer as SpriteRenderer).color = new Color(r, g, b, a);
+        }
+
+        public void ToWhite()
+        {
+            ColorTransform();
+        }
+
+        public void ToRed()
+        {
+            ColorTransform(1, 0, 0);
+        }
+
+        public void ToGreen()
+        {
+            ColorTransform(0, 1, 0);
+        }
+
+        public void ToBlue()
+        {
+            ColorTransform(0, 0, 1);
         }
 
         public static int MakeKey(short x, short y)

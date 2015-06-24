@@ -26,7 +26,7 @@ namespace Assets.Scripts.ProjectK.Scenes
             map.Init(loader);
 
             // todo test:
-            map.ResizeMap(10, 10);
+            map.ResizeMap(4, 3);
             SceneEntityManager.Create(loader, 1);
         }
 

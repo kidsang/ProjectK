@@ -40,16 +40,56 @@ namespace Assets.Scripts.ProjectK.Maps
             return cell;
         }
 
-        public MapCell GetCellBySceneXY(float sceneX, float sceneY)
+        public MapCell GetCellByWorldXY(float worldX, float worldY)
         {
-            short x = (short)(sceneX * 2 / 3.0f / MapCell.Radius);
-            short y = (short)((MapCell.Sqrt3 * sceneY - sceneX) / 3.0f / MapCell.Radius);
+            float fx = worldX * 2 / 3.0f / MapCell.Radius;
+            float fy = (MapCell.Sqrt3 * worldY - worldX) / 3.0f / MapCell.Radius;
+            float fz = -fx - fy;
+
+            float rx = Mathf.Round(fx);
+            float ry = Mathf.Round(fy);
+            float rz = Mathf.Round(fz);
+
+            float dx = Mathf.Abs(rx - fx);
+            float dy = Mathf.Abs(ry - fy);
+            float dz = Mathf.Abs(rz - fz);
+
+            if (dx > dy && dx > dz)
+                rx = -ry - rz;
+            else if (dy > dz)
+                ry = -rx - rz;
+
+            short x = (short)rx;
+            short y = (short)ry;
             return GetCell(x, y);
         }
 
-        public MapCell GetCellBySceneXY(Vector3 scenePos)
+        public MapCell GetCellByWorldXY(Vector3 worldPoint)
         {
-            return GetCellBySceneXY(scenePos.x, scenePos.y);
+            return GetCellByWorldXY(worldPoint.x, worldPoint.y);
+        }
+
+        // ----------------
+        // todo:
+
+        private MapCell lastCell;
+        private GameObject dot;
+
+        public void Update()
+        {
+            if (dot == null)
+                dot = Instantiate(Resources.Load<GameObject>("Map/Dot")) as GameObject;
+
+            if (lastCell != null)
+                lastCell.ToWhite();
+
+            Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            dot.transform.position = new Vector3(worldPoint.x, worldPoint.y);
+            lastCell = GetCellByWorldXY(worldPoint);
+            if (lastCell != null)
+                lastCell.ToBlue();
+
+
         }
 
         // ----------------

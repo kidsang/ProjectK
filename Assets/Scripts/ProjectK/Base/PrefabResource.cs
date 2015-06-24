@@ -1,0 +1,43 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using UnityEngine;
+
+namespace Assets.Scripts.ProjectK.Base
+{
+    public class PrefabResource : Resource
+    {
+        private GameObject gameObject;
+
+        internal override void Load()
+        {
+            gameObject = Resources.Load<GameObject>(Url);
+            if (gameObject == null)
+            {
+                loadFailed = true;
+                Log.Error("资源加载错误! Url:", Url, "\nType:", GetType());
+            }
+
+            state = ResourceState.Complete;
+        }
+
+        protected override void OnDispose()
+        {
+            if (gameObject != null)
+            {
+                Resources.UnloadAsset(gameObject);
+                gameObject = null;
+            }
+
+            base.OnDispose();
+        }
+
+        public GameObject Instantiate()
+        {
+            if (gameObject == null)
+                return null;
+            return (GameObject)GameObject.Instantiate(gameObject);
+        }
+    }
+}

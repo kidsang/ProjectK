@@ -10,11 +10,10 @@ namespace Assets.Scripts.ProjectK.Base
     {
         private static ResourceManager instance;
 
-        private string resRoot;
-
         private Dictionary<string, Resource> resources = new Dictionary<string, Resource>();
+        private Queue<Resource> loadingResources = new Queue<Resource>();
 
-        public static void Init(string resRoot)
+        public static void Init()
         {
             if (instance)
                 return;
@@ -22,10 +21,6 @@ namespace Assets.Scripts.ProjectK.Base
             GameObject gameObject = new GameObject("ResourceManagerObject");
             DontDestroyOnLoad(gameObject);
             instance = gameObject.AddComponent<ResourceManager>();
-
-            if (resRoot[resRoot.Length - 1] != '/')
-                resRoot += "/";
-            instance.resRoot = resRoot;
         }
 
         public static ResourceManager Instance
@@ -44,17 +39,21 @@ namespace Assets.Scripts.ProjectK.Base
             if (resources.ContainsKey(url))
             {
                 Resource tempRes = resources[url];
-                if (typeof(T) != tempRes.GetType())
-                    Log.Assert(false, "使用不同的类型加载了同一份资源！ url:", url, "oldType:", tempRes.GetType(), "newType:", typeof(T));
-                res = (T)tempRes;
-                res.AddRef();
+                if (typeof(T) == tempRes.GetType())
+                {
+                    res = (T)tempRes;
+                    res.AddRef();
+                    return res;
+                }
+                else
+                {
+                    Log.Warning("使用不同的类型加载了同一份资源！缓存被更新！ url:", url, "oldType:", tempRes.GetType(), "newType:", typeof(T));
+                }
             }
-            else
-            {
-                res = new T();
-                res.Init(url);
-                StartCoroutine(res.Load());
-            }
+
+            res = new T();
+            res.Init(url);
+            resources[url] = res;
             return res;
         }
 
@@ -63,9 +62,30 @@ namespace Assets.Scripts.ProjectK.Base
             resources.Remove(res.Url);
         }
 
-        public string ResRoot
+        internal void AppendResource(Resource res)
         {
-            get { return resRoot; }
+            loadingResources.Enqueue(res);
+        }
+
+        void Update()
+        {
+            while (loadingResources.Count > 0)
+            {
+                Resource res = loadingResources.Dequeue();
+                if (res.Disposed)
+                    continue;
+
+                if (res.Complete)
+                {
+                    res.NotifyComplete();
+                }
+                else
+                {
+                    res.Load();
+                    res.NotifyComplete();
+                }
+                break;
+            }
         }
     }
 }

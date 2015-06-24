@@ -21,8 +21,7 @@ namespace Assets.Scripts.ProjectK
                 return;
 
             instance = new Game();
-            string resRoot = "file://" + Application.dataPath;
-            ResourceManager.Init(resRoot);
+            ResourceManager.Init();
             SceneManager.Init();
             SettingManager.Init(instance.StartGame);
         }

@@ -32,7 +32,7 @@ namespace Assets.Scripts.ProjectK.Base
         }
     }
 
-    public class TabFile<T> : Resource where T: TabFileObject, new()
+    public class TabFile<T> : TextResource where T: TabFileObject, new()
     {
         private static char[] LINE_SEPERATOR = new char[] { '\n', '\r' };
         private static char[] VALUE_SEPERATOR = new char[] { '\t' };
@@ -41,9 +41,11 @@ namespace Assets.Scripts.ProjectK.Base
         private string rawData;
         private Dictionary<string, T> datas = new Dictionary<string,T>();
 
-        protected override void OnPrepareResource()
+        internal override void Load()
         {
-            LoadFromData(www.text);
+            base.Load();
+            if (Text != null)
+                LoadFromData(Text);
         }
 
         public void LoadFromData(string rawData, bool parseImmediately = true)

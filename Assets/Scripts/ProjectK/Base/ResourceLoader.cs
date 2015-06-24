@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Assets.Scripts.ProjectK.Base
 {
@@ -10,37 +11,51 @@ namespace Assets.Scripts.ProjectK.Base
         private Dictionary<string, Resource> resources = new Dictionary<string, Resource>();
         private ResourceManager manager = ResourceManager.Instance;
 
-        public void LoadIniFile(string url, out IniFile res, ResourceLoadComplete onLoadComplete = null)
+        public IniFile LoadIniFile(string url)
         {
-            Load<IniFile>(url, out res, onLoadComplete);
+            return Load<IniFile>(url);
         }
 
-        public void LoadIniFile(string url, ResourceLoadComplete onLoadComplete)
+        public IniFile LoadIniFileAsync(string url, ResourceLoadComplete onLoadComplete)
         {
-            IniFile res;
-            Load<IniFile>(url, out res, onLoadComplete);
+            return LoadAsync<IniFile>(url, onLoadComplete);
         }
 
-        public void LoadTabFile<T>(string url, out TabFile<T> res, ResourceLoadComplete onLoadComplete = null) where T: TabFileObject, new()
+        public TabFile<T> LoadTabFile<T>(string url) where T : TabFileObject, new()
         {
-            Load<TabFile<T>>(url, out res, onLoadComplete);
+             return Load<TabFile<T>>(url);
         }
 
-        public void LoadTabFile<T>(string url, ResourceLoadComplete onLoadComplete) where T: TabFileObject, new()
+        public TabFile<T> LoadTabFileAsync<T>(string url, ResourceLoadComplete onLoadComplete) where T : TabFileObject, new()
         {
-            TabFile<T> res;
-            Load<TabFile<T>>(url, out res, onLoadComplete);
+            return LoadAsync<TabFile<T>>(url, onLoadComplete);
         }
 
-        // 使用引用参数返回，因此可以在返回后调用res.NotifyComplete，避免时序问题。
-        public void Load<T>(string url, out T res, ResourceLoadComplete onLoadComplete = null) where T: Resource, new()
+        public PrefabResource LoadPrefab(string url)
         {
-            res = manager.GetResource<T>(url);
+            return Load<PrefabResource>(url);
+        }
+
+        public PrefabResource LoadPrefabAsync(string url, ResourceLoadComplete onLoadComplete = null)
+        {
+            return LoadAsync<PrefabResource>(url, onLoadComplete);
+        }
+
+        public T Load<T>(string url) where T: Resource, new()
+        {
+            T res = manager.GetResource<T>(url);
+            if (!res.Complete)
+                res.Load();
+            return res;
+        }
+
+        public T LoadAsync<T>(string url, ResourceLoadComplete onLoadComplete = null) where T: Resource, new()
+        {
+            T res = manager.GetResource<T>(url);
             if (onLoadComplete != null)
                 res.OnLoadComplete += onLoadComplete;
-
-            if (res.Complete)
-                res.NotifyComplete();
+            manager.AppendResource(res);
+            return res;
         }
 
         protected override void OnDispose()

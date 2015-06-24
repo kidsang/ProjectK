@@ -32,19 +32,19 @@ namespace Assets.Scripts.ProjectK.Settings
 
         private void LoadAll()
         {
-            LoadTabFile<EntitySetting>("SceneEntities.tab", out EntitySettings);
+            LoadTabFile<EntitySetting>("Settings/SceneEntities.tab", out EntitySettings);
         }
 
         private void LoadIniFile(string url, out IniFile res)
         {
             ++loadingCount;
-            loader.LoadIniFile(url, out res, OnLoadComplete);
+            res = loader.LoadIniFileAsync(url, OnLoadComplete);
         }
 
         private void LoadTabFile<T>(string url, out TabFile<T> res) where T: TabFileObject, new()
         {
             ++loadingCount;
-            loader.LoadTabFile(url, out res, OnLoadComplete);
+            res = loader.LoadTabFileAsync<T>(url, OnLoadComplete);
         }
 
         private void OnLoadComplete(Resource res)

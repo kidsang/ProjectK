@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Assets.Scripts.ProjectK.Base
 {
-    public class IniFile : Resource
+    public class IniFile : TextResource
     {
         private static char[] LINE_SEPERATOR = new char[] { '\n', '\r' };
 
@@ -14,9 +14,11 @@ namespace Assets.Scripts.ProjectK.Base
         private string rawData;
         private Dictionary<string, Dictionary<string, string>> datas = new Dictionary<string, Dictionary<string, string>>();
 
-        protected override void OnPrepareResource()
+        internal override void Load()
         {
-            LoadFromData(www.text);
+            base.Load();
+            if (Text != null)
+                LoadFromData(Text);
         }
 
         public void LoadFromData(string rawData, bool parseImmediately = true)

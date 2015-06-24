@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.ProjectK.Base
 {
-    enum ResourceState
+    public enum ResourceState
     {
         Loading,
         Complete,
@@ -20,41 +20,18 @@ namespace Assets.Scripts.ProjectK.Base
     {
         private ResourceManager manager = ResourceManager.Instance;
         private string url;
-        private string fullUrl;
         private int refCount = 1;
-        private ResourceState state = ResourceState.Loading;
-        private bool loadFailed = false;
+        protected ResourceState state = ResourceState.Loading;
+        protected bool loadFailed = false;
 
-        protected WWW www;
         internal event ResourceLoadComplete OnLoadComplete;
 
         internal void Init(string url)
         {
             this.url = url;
-            fullUrl = manager.ResRoot + url;
         }
-
-        internal IEnumerator Load()
-        {
-            www = new WWW(fullUrl);
-            yield return www;
-
-            string error = www.error;
-            if (string.IsNullOrEmpty(error))
-            {
-                OnPrepareResource();
-            }
-            else
-            {
-                loadFailed = true;
-                Log.Error("资源加载错误! Url:", url, "\nType:", GetType(), "\nFullUrl:", fullUrl, "\nError:", error);
-            }
-
-            state = ResourceState.Complete;
-            NotifyComplete();
-        }
-
-        abstract protected void OnPrepareResource();
+        
+        abstract internal void Load();
 
         internal void NotifyComplete()
         {
@@ -86,8 +63,6 @@ namespace Assets.Scripts.ProjectK.Base
         protected override void OnDispose()
         {
             OnLoadComplete = null;
-            www.Dispose();
-            www = null;
             manager.RemoveResource(this);
             manager = null;
             state = ResourceState.Disposed;

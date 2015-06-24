@@ -78,7 +78,7 @@ namespace Assets.Scripts.ProjectK.Maps
         public void Update()
         {
             if (dot == null)
-                dot = Instantiate(Resources.Load<GameObject>("Map/Dot")) as GameObject;
+                dot = loader.LoadPrefab("Map/Dot").Instantiate();
 
             if (lastCell != null)
                 lastCell.ToWhite();
@@ -98,7 +98,7 @@ namespace Assets.Scripts.ProjectK.Maps
         public void AddCell(short x, short y)
         {
             // todo:
-            GameObject cellObject = Instantiate(Resources.Load<GameObject>("Map/MapCell")) as GameObject;
+            GameObject cellObject = loader.LoadPrefab("Map/MapCell").Instantiate();
             cellObject.transform.parent = mapRoot.transform;
             MapCell cell = cellObject.AddComponent<MapCell>();
             cell.Init(loader, x, y);

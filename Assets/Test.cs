@@ -14,6 +14,15 @@ namespace Assets.Scripts.ProjectK
         {
             Game.Init();
             Log.Info("shit");
+
+            JsonNode node = new JsonNode();
+            node["my"] = "little";
+            node[1] = 1;
+            node["pony"] = new JsonNode();
+            node["pony"][0] = 0;
+
+            String str = node.ToString(true);
+            Log.Info(str);
         }
 
         void Update()

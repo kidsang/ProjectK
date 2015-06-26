@@ -7,6 +7,13 @@ using Assets.Scripts.ProjectK.Events;
 
 namespace Assets.Scripts.ProjectK
 {
+    public class FuckBase : Disposable
+    {
+        public FuckBase()
+        {
+        }
+    }
+
     public class Test : DisposableBehaviour
     {
 
@@ -15,22 +22,18 @@ namespace Assets.Scripts.ProjectK
             Game.Init();
             Log.Info("shit");
 
-            //JsonNode node = new JsonNode();
-            //node["my"] = "little";
-            //node[1] = 1;
-            //node["pony"] = new JsonNode();
-            //node["pony"][0] = 0;
-
-            //String str = Json.Stringfy(node, true);
-            //Log.Info(str);
-
-            //JsonNode copy = Json.Parse(str);
-            //Log.Info(copy);
-
             var json = new { my = "little", pony = new []{0} };
             var str = SimpleJson.SerializeObject(json);
             var json2 = SimpleJson.DeserializeObject(str);
             Log.Info(str);
+
+            ResourceLoader loader = new ResourceLoader();
+            JsonFile<MapSetting> jsonFile = loader.LoadJsonFile<MapSetting>("Settings/TestMapSetting.json");
+            MapSetting setting = jsonFile.Data;
+
+            new FuckBase();
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
         }
 
         void Update()

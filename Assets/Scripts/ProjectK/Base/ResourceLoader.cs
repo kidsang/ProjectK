@@ -31,6 +31,26 @@ namespace Assets.Scripts.ProjectK.Base
             return LoadAsync<TabFile<T>>(url, onLoadComplete);
         }
 
+        public JsonFile<T> LoadJsonFile<T>(string url)
+        {
+             return Load<JsonFile<T>>(url);
+        }
+
+        public JsonFile<T> LoadJsonFileAsync<T>(string url, ResourceLoadComplete onLoadComplete)
+        {
+            return LoadAsync<JsonFile<T>>(url, onLoadComplete);
+        }
+
+        public JsonFile LoadJsonFile(string url)
+        {
+             return Load<JsonFile>(url);
+        }
+
+        public JsonFile LoadJsonFileAsync(string url, ResourceLoadComplete onLoadComplete)
+        {
+            return LoadAsync<JsonFile>(url, onLoadComplete);
+        }
+
         public PrefabResource LoadPrefab(string url)
         {
             return Load<PrefabResource>(url);

@@ -77,7 +77,6 @@ namespace Assets.Scripts.ProjectK.Base
     /// Represents the json array.
     /// </summary>
     [GeneratedCode("simple-json", "1.0.0")]
-    [EditorBrowsable(EditorBrowsableState.Never)]
     [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 #if SIMPLE_JSON_OBJARRAYINTERNAL
     internal
@@ -111,7 +110,6 @@ namespace Assets.Scripts.ProjectK.Base
     /// Represents the json object.
     /// </summary>
     [GeneratedCode("simple-json", "1.0.0")]
-    [EditorBrowsable(EditorBrowsableState.Never)]
     [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 #if SIMPLE_JSON_OBJARRAYINTERNAL
     internal

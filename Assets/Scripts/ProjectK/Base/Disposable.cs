@@ -1,5 +1,5 @@
 ﻿// 检查是否忘记调用Dispose方法
- #define CHECK_DISPOSE
+#define CHECK_DISPOSE
 
 using System;
 using System.Collections.Generic;
@@ -36,31 +36,22 @@ namespace Assets.Scripts.ProjectK.Base
             get { return disposed; }
         }
 
-//#if CHECK_DISPOSE
-//        private string classString;
-//        private string createStack;
-//        internal static bool showMsg = false;
+#if CHECK_DISPOSE
+        private string classString;
+        private string createStack;
 
-//        public Disposable()
-//        {
-//            classString = this.ToString();
-//            createStack = Environment.StackTrace;
-//            showMsg = true;
-//        }
+        public Disposable()
+        {
+            classString = this.ToString();
+            createStack = Environment.StackTrace;
+        }
 
-//        ~Disposable()
-//        {
-//            if (!disposed)
-//            {
-//                string[] arr = createStack.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-//                createStack = "";
-//                for (int i = 2; i < arr.Length; ++i)
-//                    createStack += arr[i] + "\n";
-
-//                Debug.LogError("未调用Dispose方法 [" + classString +"]\n创建堆栈：\n" + createStack);
-//            }
-//        }
-//#endif
+        ~Disposable()
+        {
+            if (!disposed && !CheckDisposeUtils.ShutingDown)
+                CheckDisposeUtils.LogCreateStack(classString, createStack);
+        }
+#endif
     }
 
     public class DisposableBehaviour : MonoBehaviour, IDisposable
@@ -90,10 +81,42 @@ namespace Assets.Scripts.ProjectK.Base
             get { return disposed; }
         }
 
-        //virtual public void OnDestroy()
-        //{
-        //    if (!disposed)
-        //        Dispose();
-        //}
+#if CHECK_DISPOSE
+        private string classString;
+        private string createStack;
+        virtual public void Awake()
+        {
+            classString = this.ToString();
+            createStack = Environment.StackTrace;
+        }
+
+        virtual public void OnDestroy()
+        {
+            if (!disposed && !CheckDisposeUtils.ShutingDown)
+                CheckDisposeUtils.LogCreateStack(classString, createStack);
+        }
+
+        virtual public void OnApplicationQuit()
+        {
+            CheckDisposeUtils.ShutingDown = true;
+        }
+#endif
     }
+
+#if CHECK_DISPOSE
+    internal class CheckDisposeUtils
+    {
+        internal static bool ShutingDown = false;
+
+        internal static void LogCreateStack(string classString, string createStack)
+        {
+            string[] arr = createStack.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            createStack = "";
+            for (int i = 2; i < arr.Length; ++i)
+                createStack += arr[i] + "\n";
+
+            Debug.LogError("未调用Dispose方法 [" + classString + "]\n创建堆栈：\n" + createStack);
+        }
+    }
+#endif
 }

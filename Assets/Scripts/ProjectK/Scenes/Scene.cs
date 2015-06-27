@@ -32,8 +32,14 @@ namespace Assets.Scripts.ProjectK.Scenes
 
         protected override void OnDispose()
         {
+            map.Dispose();
+            map = null;
+
             loader.Dispose();
+            loader = null;
+
             DestroyObject(sceneRoot);
+            sceneRoot = null;
 
             base.OnDispose();
         }

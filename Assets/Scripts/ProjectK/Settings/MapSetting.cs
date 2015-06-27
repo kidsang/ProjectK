@@ -11,8 +11,8 @@ namespace Assets.Scripts.ProjectK.Settings
         public int CellCountX;
         public int CellCountY;
 
-        public List<int> Numbers;
-        public List<MapCellSetting> Cells;
+        public int[] Numbers;
+        public MapCellSetting[] Cells;
     }
 
     public class MapCellSetting

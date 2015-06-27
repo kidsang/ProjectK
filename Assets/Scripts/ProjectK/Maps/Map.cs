@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Assets.Scripts.ProjectK.Base;
+using Assets.Scripts.ProjectK.Settings;
 
 namespace Assets.Scripts.ProjectK.Maps
 {
@@ -26,10 +27,22 @@ namespace Assets.Scripts.ProjectK.Maps
 
         protected override void OnDispose()
         {
+            foreach (MapCell cell in cells.Values)
+                cell.Dispose();
+            cells = null;
+
             loader = null;
+
             DestroyObject(mapRoot);
+            mapRoot = null;
 
             base.OnDispose();
+        }
+
+        public void Load(string url)
+        {
+            var res = loader.LoadJsonFile<MapSetting>(url);
+            MapSetting setting = res.Data;
         }
 
         public MapCell GetCell(short x, short y)

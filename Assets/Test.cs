@@ -20,25 +20,21 @@ namespace Assets.Scripts.ProjectK
         void Start()
         {
             Game.Init();
-            Log.Info("shit");
-
-            var json = new { my = "little", pony = new []{0} };
-            var str = SimpleJson.SerializeObject(json);
-            var json2 = SimpleJson.DeserializeObject(str);
-            Log.Info(str);
 
             ResourceLoader loader = new ResourceLoader();
             JsonFile<MapSetting> jsonFile = loader.LoadJsonFile<MapSetting>("Settings/TestMapSetting.json");
             MapSetting setting = jsonFile.Data;
+            var str = SimpleJson.SerializeObject(setting);
+            Log.Info(str);
 
             new FuckBase();
+
             System.GC.Collect();
             System.GC.WaitForPendingFinalizers();
         }
 
         void Update()
         {
-
         }
 
     }

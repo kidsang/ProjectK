@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 using Assets.Scripts.ProjectK.Base;
+using Assets.Scripts.EditorK.Maps;
 
 namespace Assets.Scripts.EditorK
 {
@@ -11,7 +13,10 @@ namespace Assets.Scripts.EditorK
     {
         private static Editor instance;
 
-        void Start()
+        public EditorMap Map;
+        public Canvas UICanvas;
+
+        void Awake()
         {
             if (instance == null)
                 instance = this;
@@ -21,9 +26,13 @@ namespace Assets.Scripts.EditorK
             ResourceManager.Init();
         }
 
-        void Update()
+        void Start()
         {
-            Log.Info(Screen.width, Screen.height);
+        }
+
+        public static Editor Instance
+        {
+            get { return instance; }
         }
     }
 }

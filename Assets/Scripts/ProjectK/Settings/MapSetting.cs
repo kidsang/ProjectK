@@ -11,7 +11,6 @@ namespace Assets.Scripts.ProjectK.Settings
         public int CellCountX;
         public int CellCountY;
 
-        public int[] Numbers;
         public MapCellSetting[] Cells;
     }
 

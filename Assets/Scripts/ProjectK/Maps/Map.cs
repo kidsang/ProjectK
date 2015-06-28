@@ -14,42 +14,60 @@ namespace Assets.Scripts.ProjectK.Maps
      */
     public class Map : DisposableBehaviour
     {
-        private GameObject mapRoot;
-        private ResourceLoader loader;
+        protected GameObject MapRoot { get; private set; }
+        protected ResourceLoader Loader { get; private set; }
 
-        private Dictionary<int, MapCell> cells = new Dictionary<int, MapCell>();
+        public string Name { get; protected set; }
+        public float Width { get; protected set; }
+        public float Height { get; protected set; }
+        public int CellCountX { get; protected set; }
+        public int CellCountY { get; protected set; }
+
+        protected Dictionary<int, MapCell> Cells { get; set; }
 
         internal void Init(ResourceLoader loader)
         {
-            mapRoot = gameObject;
-            this.loader = loader;
+            MapRoot = gameObject;
+            Loader = loader;
+            Cells = new Dictionary<int, MapCell>();
         }
 
         protected override void OnDispose()
         {
-            foreach (MapCell cell in cells.Values)
+            foreach (MapCell cell in Cells.Values)
                 cell.Dispose();
-            cells = null;
+            Cells = null;
 
-            loader = null;
+            Loader = null;
 
-            DestroyObject(mapRoot);
-            mapRoot = null;
+            DestroyObject(MapRoot);
+            MapRoot = null;
 
             base.OnDispose();
         }
 
         public void Load(string url)
         {
-            var res = loader.LoadJsonFile<MapSetting>(url);
+            var res = Loader.LoadJsonFile<MapSetting>(url);
             MapSetting setting = res.Data;
+
+            Name = setting.Name;
+            CellCountX = setting.CellCountX;
+            CellCountY = setting.CellCountY;
+            UpdateMapSize();
+        }
+
+        protected void UpdateMapSize()
+        {
+            Width = Mathf.Max(0, CellCountX - 1) * MapCell.HalfWidth * 1.5f;
+            Height = Mathf.Max(0, CellCountY - 1) * MapCell.Height;
         }
 
         public MapCell GetCell(short x, short y)
         {
             int key = MapCell.MakeKey(x, y);
             MapCell cell = null;
-            cells.TryGetValue(key, out cell);
+            Cells.TryGetValue(key, out cell);
             return cell;
         }
 
@@ -91,7 +109,7 @@ namespace Assets.Scripts.ProjectK.Maps
         public void Update()
         {
             if (dot == null)
-                dot = loader.LoadPrefab("Map/Dot").Instantiate();
+                dot = Loader.LoadPrefab("Map/Dot").Instantiate();
 
             if (lastCell != null)
                 lastCell.ToWhite();
@@ -103,46 +121,6 @@ namespace Assets.Scripts.ProjectK.Maps
                 lastCell.ToBlue();
 
 
-        }
-
-        // ----------------
-        // for editor
-
-        public void AddCell(short x, short y)
-        {
-            // todo:
-            GameObject cellObject = loader.LoadPrefab("Map/MapCell").Instantiate();
-            cellObject.transform.parent = mapRoot.transform;
-            MapCell cell = cellObject.AddComponent<MapCell>();
-            cell.Init(loader, x, y);
-            cells.Add(cell.Key, cell);
-        }
-
-        public void ResizeMap(short countX, short countY)
-        {
-            Dictionary<int, MapCell> oldCells = cells;
-            cells = new Dictionary<int, MapCell>();
-
-            for (short j = 0; j < countY; ++j)
-            {
-                for (short i = 0; i < countX; ++i)
-                {
-                    short x = i;
-                    short y = (short)(j - i / 2);
-
-                    int key = MapCell.MakeKey(x, y);
-                    if (oldCells.ContainsKey(key))
-                    {
-                        MapCell cell = oldCells[key];
-                        oldCells.Remove(key);
-                        cells.Add(key, cell);
-                    }
-                    else
-                    {
-                        AddCell(x, y);
-                    }
-                }
-            }
         }
     }
 }

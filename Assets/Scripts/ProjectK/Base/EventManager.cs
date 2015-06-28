@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Assets.Scripts.ProjectK.Base;
 
-namespace Assets.Scripts.ProjectK.Events
+namespace Assets.Scripts.ProjectK.Base
 {
     public delegate void EventListener(params object[] args);
 
@@ -86,6 +85,14 @@ namespace Assets.Scripts.ProjectK.Events
                 return;
 
             listeners[type](args);
+        }
+
+        public void FireEvent(string type)
+        {
+            if (!listeners.ContainsKey(type))
+                return;
+
+            listeners[type](null);
         }
 
         private class ListenerInfo

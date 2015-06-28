@@ -64,6 +64,26 @@ namespace Assets.Scripts.ProjectK.Maps
             get { return key; }
         }
 
+        public static float HalfWidth
+        {
+            get { return Radius; }
+        }
+
+        public static float HalfHeight
+        {
+            get { return Radius * Sqrt3 * 0.5f;}
+        }
+
+        public static float Width
+        {
+            get { return Radius * 2; }
+        }
+
+        public static float Height
+        {
+            get { return Radius * Sqrt3; }
+        }
+
         public float CenterX
         {
             get { return Radius * 1.5f * x; }

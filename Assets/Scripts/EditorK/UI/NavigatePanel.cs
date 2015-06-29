@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.Scripts.ProjectK;
 using Assets.Scripts.ProjectK.Base;
 using Assets.Scripts.EditorK.Maps;
 
@@ -22,6 +23,7 @@ namespace Assets.Scripts.EditorK.UI
 
         private void OnScreenResize(object[] args)
         {
+            Camera camera = MiniMapCamera;
             Rect viewRect = ViewArea.rect;
             Rect canvasRect = CanvasArea.rect;
 
@@ -30,6 +32,12 @@ namespace Assets.Scripts.EditorK.UI
             Rect cameraRect = new Rect(viewPosition.x / canvasRect.width, viewPosition.y / canvasRect.height,
                 viewRect.width / canvasRect.width, viewRect.height / canvasRect.height);
             camera.rect = cameraRect;
+
+            EditorMap map = GameEditor.Instance.Map;
+            camera.transform.position = new Vector3(map.Width / 2, map.Height / 2, -10);
+
+            camera.orthographicSize = map.Height / 2;
+            camera.orthographicSize = Mathf.Max(camera.orthographicSize, map.Width / 2 / camera.aspect);
         }
     }
 }

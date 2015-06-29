@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.Scripts.ProjectK;
 using Assets.Scripts.ProjectK.Base;
 using Assets.Scripts.EditorK.Maps;
 
@@ -33,6 +34,7 @@ namespace Assets.Scripts.EditorK.UI
                 Screen.SetResolution(lastScreenWidth, lastScreenHeight, false);
 
                 OnScreenResize();
+                EventManager.Instance.FireEvent(EditorEvent.SCREEN_RESIZE);
             }
         }
 
@@ -41,7 +43,7 @@ namespace Assets.Scripts.EditorK.UI
             resizing = true;
 
             Camera camera = Camera.main;
-            EditorMap map = Editor.Instance.Map;
+            EditorMap map = GameEditor.Instance.Map;
             Rect viewRect = ViewArea.rect;
             Rect canvasRect = CanvasArea.rect;
 
@@ -51,7 +53,7 @@ namespace Assets.Scripts.EditorK.UI
                 viewRect.width / canvasRect.width, viewRect.height / canvasRect.height);
             camera.rect = cameraRect;
             // 同时还要保持MapCell的原始尺寸不被拉伸
-            camera.orthographicSize = lastScreenHeight / 200.0f * cameraRect.height;
+            camera.orthographicSize = lastScreenHeight / 2 * GameDefines.PixelToUnitF * cameraRect.height;
 
             float cameraHalfHeight = camera.orthographicSize;
             float cameraHalfWidth = cameraHalfHeight * camera.aspect;
@@ -71,9 +73,9 @@ namespace Assets.Scripts.EditorK.UI
                 cameraPosition.y = top;
             camera.transform.position = cameraPosition;
 
-            HScrollBar.size = Mathf.Min(1, viewRect.width / (map.Width * 100.0f));
+            HScrollBar.size = Mathf.Min(1, viewRect.width / (map.Width * GameDefines.UnitToPixelF));
             HScrollBar.value = Mathf.Min(1, (cameraPosition.x - left) / (right - left));
-            VScrollBar.size = Mathf.Min(1, viewRect.height / (map.Height * 100.0f));
+            VScrollBar.size = Mathf.Min(1, viewRect.height / (map.Height * GameDefines.UnitToPixelF));
             VScrollBar.value = Mathf.Min(1, (cameraPosition.y - bottom) / (top - bottom));
 
             resizing = false;
@@ -85,7 +87,7 @@ namespace Assets.Scripts.EditorK.UI
                 return;
 
             Camera camera = Camera.main;
-            EditorMap map = Editor.Instance.Map;
+            EditorMap map = GameEditor.Instance.Map;
             float cameraHalfWidth = camera.orthographicSize * camera.aspect;
             float left = cameraHalfWidth;
             float right = map.Width - cameraHalfWidth;
@@ -101,7 +103,7 @@ namespace Assets.Scripts.EditorK.UI
                 return;
 
             Camera camera = Camera.main;
-            EditorMap map = Editor.Instance.Map;
+            EditorMap map = GameEditor.Instance.Map;
             float cameraHalfHeight = camera.orthographicSize;
             float bottom = cameraHalfHeight;
             float top = map.Height - cameraHalfHeight;

@@ -9,9 +9,9 @@ using Assets.Scripts.EditorK.Maps;
 
 namespace Assets.Scripts.EditorK
 {
-    public class Editor : MonoBehaviour
+    public class GameEditor : MonoBehaviour
     {
-        private static Editor instance;
+        private static GameEditor instance;
 
         public EditorMap Map;
         public Canvas UICanvas;
@@ -30,7 +30,7 @@ namespace Assets.Scripts.EditorK
         {
         }
 
-        public static Editor Instance
+        public static GameEditor Instance
         {
             get { return instance; }
         }

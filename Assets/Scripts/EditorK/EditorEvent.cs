@@ -11,5 +11,7 @@ namespace Assets.Scripts.EditorK
         {
             return "Editor_" + name;
         }
+
+        public static string SCREEN_RESIZE = DefineEvent("SCREEN_RESIZE");
     }
 }

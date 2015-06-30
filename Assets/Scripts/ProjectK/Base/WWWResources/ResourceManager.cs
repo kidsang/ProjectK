@@ -54,10 +54,15 @@ namespace Assets.Scripts.ProjectK.Base.WWWResources
                 if (newType == oldType)
                 {
                     res.AddRef();
-                    if (res.priority < priority && pendingResources.IndexOf(res) >= 0)
+                    if (res.priority < priority)
                     {
                         res.priority = priority;
-                        SortPendingList();
+                        int index = pendingResources.IndexOf(res);
+                        if (index > 0) // 如果index == 0，说明已经在队列的最前了，不需要重排
+                        {
+                            pendingResources.RemoveAt(index);
+                            AddToPendingList(res);
+                        }
                     }
                     return (T)res;
                 }
@@ -71,10 +76,13 @@ namespace Assets.Scripts.ProjectK.Base.WWWResources
                 if (oldType == typeof(PreloadResource))
                 {
                     PreloadResource preloaded = res as PreloadResource;
+                    pendingResources.Remove(preloaded);
+
                     res = new T();
                     res.CopyFrom(preloaded);
-                    StartCoroutine(res.AfterLoad());
+                    res.priority = priority;
                     resources[url] = res;
+                    StartCoroutine(res.AfterLoad());
                     return (T)res;
                 }
 
@@ -84,7 +92,9 @@ namespace Assets.Scripts.ProjectK.Base.WWWResources
             res = new T();
             res.Init(url, priority);
             resources[url] = res;
-            AddToPendingList(res);
+
+            if (!PackedResourceManager.Instance.TryLoad(res))
+                AddToPendingList(res);
             return (T)res;
         }
 
@@ -107,11 +117,6 @@ namespace Assets.Scripts.ProjectK.Base.WWWResources
             pendingResources.Insert(0, res);
         }
 
-        private void SortPendingList()
-        {
-            pendingResources.Sort(resourceComparer);
-        }
-
         void Update()
         {
             int index = -1;
@@ -131,7 +136,7 @@ namespace Assets.Scripts.ProjectK.Base.WWWResources
                 {
                     Resource res = pendingResources[0];
                     pendingResources.RemoveAt(0);
-                    if (!res.Downloading)
+                    if (!res.Pending)
                         continue;
 
                     loadingResources[index] = res;
@@ -140,14 +145,5 @@ namespace Assets.Scripts.ProjectK.Base.WWWResources
                 }
             }
         }
-
-        class ResourceComparer : IComparer<Resource>
-        {
-            public int Compare(Resource x, Resource y)
-            {
-                return x.priority - y.priority;
-            }
-        }
-        ResourceComparer resourceComparer = new ResourceComparer();
     }
 }

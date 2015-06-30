@@ -10,6 +10,7 @@ namespace Assets.Scripts.ProjectK.Base.WWWResources
 {
     public enum ResourceState
     {
+        Pending,
         Downloading,
         Downloaded,
         Complete,
@@ -25,7 +26,7 @@ namespace Assets.Scripts.ProjectK.Base.WWWResources
         internal ResourcePriority priority;
         private int refCount = 1;
 
-        private ResourceState state = ResourceState.Downloading;
+        private ResourceState state = ResourceState.Pending;
         protected bool loadFailed = false;
         protected WWW www;
 
@@ -33,6 +34,7 @@ namespace Assets.Scripts.ProjectK.Base.WWWResources
 
         internal IEnumerator Load()
         {
+            state = ResourceState.Downloading;
             www = new WWW(url);
             yield return www;
             if (Disposed)
@@ -131,6 +133,11 @@ namespace Assets.Scripts.ProjectK.Base.WWWResources
         public string Url
         {
             get { return url; }
+        }
+
+        public bool Pending
+        {
+            get { return state == ResourceState.Pending; }
         }
 
         public bool Downloading

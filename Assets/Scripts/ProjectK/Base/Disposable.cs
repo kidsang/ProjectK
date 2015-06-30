@@ -23,11 +23,12 @@ namespace Assets.Scripts.ProjectK.Base
             disposed = true;
 
             if (!onDisposed)
-                Log.Error("SubClass did not call SuperClass.OnDispose()!");
+                Log.Error("SubClass did not call SuperClass.OnDispose()! \n SubClass:", GetType());
         }
 
         virtual protected void OnDispose()
         {
+            EventManager.Instance.UnregisterAll(this);
             onDisposed = true;
         }
 
@@ -68,11 +69,12 @@ namespace Assets.Scripts.ProjectK.Base
             disposed = true;
 
             if (!onDisposed)
-                Log.Error("SubClass did not call SuperClass.OnDispose()!");
+                Log.Error("SubClass did not call SuperClass.OnDispose()! \n SubClass:", GetType());
         }
 
         virtual protected void OnDispose()
         {
+            EventManager.Instance.UnregisterAll(this);
             onDisposed = true;
         }
 

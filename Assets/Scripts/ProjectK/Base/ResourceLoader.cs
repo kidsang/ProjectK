@@ -63,19 +63,35 @@ namespace Assets.Scripts.ProjectK.Base
 
         public T Load<T>(string url) where T: Resource, new()
         {
-            T res = manager.GetResource<T>(url);
+            Resource res;
+            if (!resources.TryGetValue(url, out res))
+            {
+                res = manager.GetResource<T>(url);
+                resources[url] = res;
+            }
+
+            // 用户有可能先调用LoadAsync()，再调用Load()
+            // 那么为了保证资源加载完成，这里统一调用一次res.Load()
             if (!res.Complete)
                 res.Load();
-            return res;
+
+            return (T)res;
         }
 
         public T LoadAsync<T>(string url, ResourceLoadComplete onLoadComplete = null) where T: Resource, new()
         {
-            T res = manager.GetResource<T>(url);
+            Resource res;
+            if (!resources.TryGetValue(url, out res))
+            {
+                res = manager.GetResource<T>(url);
+                resources[url] = res;
+            }
+
             if (onLoadComplete != null)
                 res.OnLoadComplete += onLoadComplete;
             manager.AppendResource(res);
-            return res;
+
+            return (T)res;
         }
 
         protected override void OnDispose()

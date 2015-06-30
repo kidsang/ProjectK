@@ -35,26 +35,24 @@ namespace Assets.Scripts.ProjectK.Base
         // 根据T创建一个新的Resource，或者返回已有的Resource
         internal T GetResource<T>(string url) where T: Resource, new()
         {
-            T res;
-            if (resources.ContainsKey(url))
+            Resource res;
+            if (resources.TryGetValue(url, out res))
             {
-                Resource tempRes = resources[url];
-                if (typeof(T) == tempRes.GetType())
+                if (typeof(T) == res.GetType())
                 {
-                    res = (T)tempRes;
                     res.AddRef();
-                    return res;
+                    return (T)res;
                 }
                 else
                 {
-                    Log.Warning("使用不同的类型加载了同一份资源！缓存被更新！ url:", url, "oldType:", tempRes.GetType(), "newType:", typeof(T));
+                    Log.Warning("使用不同的类型加载了同一份资源！缓存被更新！ url:", url, "oldType:", res.GetType(), "newType:", typeof(T));
                 }
             }
 
             res = new T();
             res.Init(url);
             resources[url] = res;
-            return res;
+            return (T)res;
         }
 
         internal void RemoveResource(Resource res)

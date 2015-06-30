@@ -15,6 +15,8 @@ namespace Assets.Scripts.EditorK.UI
         public Camera MiniMapCamera;
         public RectTransform CanvasArea;
         public RectTransform ViewArea;
+        public RectTransform SceneArea;
+        public RectTransform Box;
 
         void Start()
         {
@@ -38,6 +40,11 @@ namespace Assets.Scripts.EditorK.UI
 
             camera.orthographicSize = map.Height / 2;
             camera.orthographicSize = Mathf.Max(camera.orthographicSize, map.Width / 2 / camera.aspect);
+
+            Rect sceneRect = SceneArea.rect;
+            Box.sizeDelta = new Vector2(sceneRect.width / map.Width * viewRect.width * GameDefines.PixelToUnitF, sceneRect.height / map.Height * viewRect.height * GameDefines.PixelToUnitF);
+            Vector3 mainCameraPosition = Camera.main.transform.position;
+            Box.localPosition = new Vector3(mainCameraPosition.x / map.Width * viewRect.width, mainCameraPosition.y / map.Height * viewRect.height);
         }
     }
 }

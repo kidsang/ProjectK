@@ -14,7 +14,7 @@ namespace Assets.Scripts.ProjectK.Base.WWWResources
             yield break;
         }
 
-        internal override IEnumerator OnDownloaded()
+        internal override IEnumerator OnPrepareData()
         {
             yield break;
         }

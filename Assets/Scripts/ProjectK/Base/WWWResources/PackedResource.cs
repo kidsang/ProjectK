@@ -17,15 +17,25 @@ namespace Assets.Scripts.ProjectK.Base.WWWResources
             subResources.Add(subRes);
         }
 
-        internal override IEnumerator OnDownloaded()
+        internal override IEnumerator OnPrepareData()
         {
             yield break;
             // not implement
         }
 
-        internal void DoSubResources()
+        internal IEnumerator DoSubResources()
         {
-            // not implement
+            List<Resource> list = new List<Resource>(subResources);
+            subResources.Clear();
+
+            foreach (Resource subRes in list)
+            {
+                if (!subRes.Disposed)
+                {
+                    byte[] bytes = subResourceBytes[subRes.Url];
+                    yield return subRes.OnDownloaded(bytes);
+                }
+            }
         }
 
         protected override void OnDispose()

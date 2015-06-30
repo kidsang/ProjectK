@@ -27,8 +27,9 @@ namespace Assets.Scripts.ProjectK.Base.WWWResources
         private int refCount = 1;
 
         private ResourceState state = ResourceState.Pending;
+        private WWW www;
+        protected byte[] rawData;
         protected bool loadFailed = false;
-        protected WWW www;
 
         internal event ResourceLoadComplete OnLoadComplete;
 
@@ -47,27 +48,48 @@ namespace Assets.Scripts.ProjectK.Base.WWWResources
         internal IEnumerator AfterLoad()
         {
             // 从Preload处恢复的时候，Preload很可能还没有加载完
-            while (!www.isDone) 
-                yield return null;
-
-            string error = www.error;
-            if (string.IsNullOrEmpty(error))
+            while (!www.isDone)
             {
-                yield return OnDownloaded();
                 if (Disposed)
                     yield break;
+                yield return null;
+            }
+
+            string error = www.error;
+            byte[] rawData = www.bytes;
+            www.Dispose();
+            www = null;
+
+            if (string.IsNullOrEmpty(error))
+            {
+                yield return OnDownloaded(rawData);
             }
             else
             {
                 loadFailed = true;
                 Log.Error("资源加载错误! Url:", url, "\nType:", GetType(), "\nError:", error);
+                state = ResourceState.Complete;
+                NotifyComplete();
             }
+
+        }
+
+        internal IEnumerator OnDownloaded(byte[] rawData)
+        {
+            this.rawData = rawData;
+
+            // not implement
+            // unpack here
+
+            yield return OnPrepareData();
+            if (Disposed)
+                yield break;
 
             state = ResourceState.Complete;
             NotifyComplete();
         }
 
-        abstract internal IEnumerator OnDownloaded();
+        abstract internal IEnumerator OnPrepareData();
 
         internal void NotifyComplete()
         {

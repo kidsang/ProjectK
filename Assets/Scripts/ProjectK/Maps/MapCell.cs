@@ -12,36 +12,58 @@ namespace Assets.Scripts.ProjectK.Maps
      */
     public class MapCell : DisposableBehaviour
     {
-        public static float Radius = 1.0f;
-        public static float Sqrt3 = Mathf.Sqrt(3.0f);
+        public static readonly float Radius = 1.0f;
+        public static readonly float Sqrt3 = Mathf.Sqrt(3.0f);
 
-        private GameObject cellObject;
-        private ResourceLoader loader;
+        protected GameObject CellObject { get; private set; }
+        public Map Map { get; private set; }
+        public ResourceLoader Loader { get; private set; }
 
         private short x;
         private short y;
         private short z;
         private int key;
 
-        internal void Init(ResourceLoader loader, short x, short y)
+        public bool IsObstacle { get; set; }
+        public static readonly int NumNeighbours = 6;
+        public MapCell[] Neighbours { get; private set; }
+
+        internal void Init(Map map, short x, short y)
         {
-            cellObject = gameObject;
-            this.loader = loader;
+            CellObject = gameObject;
+            Map = map;
+            Loader = map.Loader;
 
             this.x = x;
             this.y = y;
             this.z = (short)(-x - y);
             this.key = MakeKey(x, y);
 
-            cellObject.transform.position = new Vector3(CenterX, CenterY);
+            CellObject.transform.position = new Vector3(CenterX, CenterY);
+
+            Neighbours = new MapCell[NumNeighbours];
         }
 
         protected override void OnDispose()
         {
-            loader = null;
-            DestroyObject(cellObject);
+            DestroyObject(CellObject);
+            CellObject = null;
+
+            Map = null;
+            Loader = null;
+            Neighbours = null;
 
             base.OnDispose();
+        }
+
+        internal void BuildNeighbours()
+        {
+            Neighbours[0] = Map.GetCell(x + 1, y - 1);
+            Neighbours[1] = Map.GetCell(x + 1, y);
+            Neighbours[2] = Map.GetCell(x, y + 1);
+            Neighbours[3] = Map.GetCell(x - 1, y + 1);
+            Neighbours[4] = Map.GetCell(x - 1, y);
+            Neighbours[5] = Map.GetCell(x, y - 1);
         }
 
         public short X
@@ -62,6 +84,11 @@ namespace Assets.Scripts.ProjectK.Maps
         public int Key
         {
             get { return key; }
+        }
+
+        public Vector2 Location
+        {
+            get { return new Vector2(x, y); }
         }
 
         public static float HalfWidth
@@ -117,6 +144,20 @@ namespace Assets.Scripts.ProjectK.Maps
         public void ToBlue()
         {
             ColorTransform(0, 0, 1);
+        }
+
+        public void ShowNeighbours(bool show)
+        {
+            foreach (MapCell cell in Neighbours)
+            {
+                if (cell != null)
+                {
+                    if (show)
+                        cell.ColorTransform(0.5f, 0.5f, 0.5f);
+                    else
+                        cell.ColorTransform();
+                }
+            }
         }
 
         public static int MakeKey(short x, short y)

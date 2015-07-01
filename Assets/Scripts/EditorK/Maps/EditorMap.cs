@@ -37,7 +37,7 @@ namespace Assets.Scripts.EditorK.Maps
             GameObject cellObject = Loader.LoadPrefab("Map/MapCell").Instantiate();
             cellObject.transform.parent = MapRoot.transform;
             MapCell cell = cellObject.AddComponent<MapCell>();
-            cell.Init(Loader, x, y);
+            cell.Init(this, x, y);
             Cells.Add(cell.Key, cell);
         }
 
@@ -73,6 +73,8 @@ namespace Assets.Scripts.EditorK.Maps
 
             foreach (MapCell cell in oldCells.Values)
                 cell.Dispose();
+
+            BuildNeighbours();
         }
 
         public void Save(string url)

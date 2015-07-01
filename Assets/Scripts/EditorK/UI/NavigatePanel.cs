@@ -18,6 +18,9 @@ namespace Assets.Scripts.EditorK.UI
         public RectTransform SceneArea;
         public RectTransform Box;
 
+        private bool draging = false;
+        private Vector3 lastMousePosition;
+
         void Start()
         {
             EventManager.Instance.Register(this, EditorEvent.SCREEN_RESIZE, OnScreenResize);
@@ -45,6 +48,32 @@ namespace Assets.Scripts.EditorK.UI
             Box.sizeDelta = new Vector2(sceneRect.width / map.Width * viewRect.width * GameDefines.PixelToUnitF, sceneRect.height / map.Height * viewRect.height * GameDefines.PixelToUnitF);
             Vector3 mainCameraPosition = Camera.main.transform.position;
             Box.localPosition = new Vector3(mainCameraPosition.x / map.Width * viewRect.width, mainCameraPosition.y / map.Height * viewRect.height);
+        }
+
+        public void OnMouseDown()
+        {
+            draging = true;
+            lastMousePosition = Input.mousePosition;
+        }
+
+        void Update()
+        {
+            if (draging)
+            {
+                if (Input.GetMouseButtonUp(0))
+                {
+                    draging = false;
+                }
+                else
+                {
+                    Vector3 curMousePosition = Input.mousePosition;
+                    Vector3 deltaMousePosition = curMousePosition - lastMousePosition;
+                    Box.localPosition += deltaMousePosition;
+                    lastMousePosition = curMousePosition;
+
+                    // TODO: 这个几把功能优先级调低
+                }
+            }
         }
     }
 }

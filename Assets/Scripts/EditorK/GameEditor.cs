@@ -9,19 +9,20 @@ using Assets.Scripts.EditorK.Maps;
 
 namespace Assets.Scripts.EditorK
 {
-    public class GameEditor : MonoBehaviour
+    public class GameEditor : DisposableBehaviour
     {
         private static GameEditor instance;
+        public static GameEditor Instance { get { return instance; } }
 
         public EditorMap Map;
         public Canvas UICanvas;
 
-        void Awake()
+        public override void Awake()
         {
             if (instance == null)
                 instance = this;
             else if (instance != this)
-                throw new Exception("多个Editor实例！");
+                throw new Exception("多个GameEditor实例！");
 
             ResourceManager.Init();
         }
@@ -30,9 +31,5 @@ namespace Assets.Scripts.EditorK
         {
         }
 
-        public static GameEditor Instance
-        {
-            get { return instance; }
-        }
     }
 }

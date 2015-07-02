@@ -12,6 +12,16 @@ namespace Assets.Scripts.EditorK
             return "Editor_" + name;
         }
 
+        // no args
         public static string SCREEN_RESIZE = DefineEvent("SCREEN_RESIZE");
+
+        // no args
+        public static string SCENE_MOUSE_CLICK = DefineEvent("SCENE_MOUSE_CLICK");
+
+        // no args
+        public static string SCENE_MOUSE_IN = DefineEvent("SCENE_MOUSE_IN");
+
+        // no args
+        public static string SCENE_MOUSE_OUT = DefineEvent("SCENE_MOUSE_OUT");
     }
 }

@@ -121,6 +121,11 @@ namespace Assets.Scripts.ProjectK.Maps
             get { return Radius * Sqrt3 * (y + 0.5f * x); }
         }
 
+        public Vector2 Position
+        {
+            get { return new Vector2(CenterX, CenterY); }
+        }
+
         public void ColorTransform(float r = 1, float g = 1, float b = 1, float a = 1)
         {
             (renderer as SpriteRenderer).color = new Color(r, g, b, a);

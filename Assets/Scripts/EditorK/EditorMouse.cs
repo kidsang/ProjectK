@@ -9,6 +9,11 @@ using Assets.Scripts.EditorK.Maps;
 
 namespace Assets.Scripts.EditorK
 {
+    public enum EditorMouseDataType
+    {
+        None,
+    }
+
     public class EditorMouse : DisposableBehaviour
     {
         private static EditorMouse instance;
@@ -16,6 +21,11 @@ namespace Assets.Scripts.EditorK
 
         public EditorMap Map;
         public MapCell SelectedMapCell { get; private set; }
+        public object Data { get; private set; }
+        public EditorMouseDataType DataType { get; private set; }
+
+        private ResourceLoader loader;
+        private GameObject selectObject;
 
         public override void Awake()
         {
@@ -27,35 +37,79 @@ namespace Assets.Scripts.EditorK
 
         void Start()
         {
-
+            loader = new ResourceLoader();
+            selectObject = loader.LoadPrefab("Map/MapCellSelect").Instantiate();
+            selectObject.SetActive(false);
         }
 
-        private void SelectMapCell()
+        public void SelectMapCell()
         {
             DeselectMapCell();
 
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             SelectedMapCell = Map.GetCellByWorldXY(worldPoint);
+
+            if (SelectedMapCell != null)
+            {
+                selectObject.SetActive(true);
+                selectObject.transform.position = SelectedMapCell.Position;
+            }
         }
 
-        private void DeselectMapCell()
+        public void DeselectMapCell()
         {
-            SelectedMapCell = null;
+            if (SelectedMapCell != null)
+            {
+                SelectedMapCell = null;
+                selectObject.SetActive(false);
+            }
+        }
+
+        public void SetData(EditorMouseDataType dataType, object data)
+        {
+            DeselectMapCell();
+            DataType = dataType;
+            Data = data;
+        }
+
+        public void ClearData()
+        {
+            DataType = EditorMouseDataType.None;
+            Data = null;
+        }
+
+        public void Clear()
+        {
+            DeselectMapCell();
+            ClearData();
         }
 
         public void OnSceneMouseClick()
         {
-            Log.Info("OnSceneMouseClick");
+            if (Input.GetMouseButtonUp(0))
+            {
+                if (DataType == EditorMouseDataType.None)
+                    SelectMapCell();
+            }
+            else if (Input.GetMouseButtonUp(1))
+            {
+                if (DataType == EditorMouseDataType.None)
+                    DeselectMapCell();
+                else
+                    ClearData();
+            }
+
+            EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_CLICK);
         }
 
         public void OnSceneMouseIn()
         {
-            Log.Info("OnSceneMouseIn");
+            EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_IN);
         }
 
         public void OnSceneMouseOut()
         {
-            Log.Info("OnSceneMouseOut");
+            EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_OUT);
         }
     }
 }

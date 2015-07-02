@@ -12,6 +12,8 @@ namespace Assets.Scripts.EditorK
     public enum EditorMouseDataType
     {
         None,
+        MapStart,
+        MapEnd,
     }
 
     public class EditorMouse : DisposableBehaviour

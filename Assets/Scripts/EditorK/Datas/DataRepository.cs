@@ -12,22 +12,22 @@ namespace Assets.Scripts.EditorK.Datas
         private int nextIndex = 0;
         public T Data { get; private set; }
 
-        public void New(T data, string evt, Dictionary<string, object> args)
+        public void New(T data, string evt, Dictionary<string, object> infos)
         {
             Clear(0);
             Data = data;
-            Modify(evt, args);
+            Modify(evt, infos);
         }
 
-        public void Modify(string evt, Dictionary<string, object> args)
+        public void Modify(string evt, Dictionary<string, object> infos)
         {
             Clear(nextIndex);
             nextIndex += 1;
-            HistoryData current = new HistoryData(Data, evt, args);
+            HistoryData current = new HistoryData(Data, evt, infos);
             history.Add(current);
             Data = Clone(current.Data);
 
-            EventManager.Instance.FireEvent(evt, args);
+            EventManager.Instance.FireEvent(evt, infos);
         }
 
         public void Undo()
@@ -40,7 +40,7 @@ namespace Assets.Scripts.EditorK.Datas
             HistoryData current = history[nextIndex - 1];
             Data = Clone(current.Data);
 
-            EventManager.Instance.FireEvent(last.Event, last.Args);
+            EventManager.Instance.FireEvent(last.Event, last.Infos);
         }
 
         public void Redo()
@@ -52,7 +52,7 @@ namespace Assets.Scripts.EditorK.Datas
             Data = Clone(current.Data);
             nextIndex += 1;
 
-            EventManager.Instance.FireEvent(current.Event, current.Args);
+            EventManager.Instance.FireEvent(current.Event, current.Infos);
         }
 
         private void Clear(int toIndex)
@@ -78,16 +78,16 @@ namespace Assets.Scripts.EditorK.Datas
 
         class HistoryData
         {
-            public HistoryData(T data, string evt, Dictionary<string, object> args)
+            public HistoryData(T data, string evt, Dictionary<string, object> infos)
             {
                 Data = data;
                 Event = evt;
-                Args = args;
+                Infos = infos;
             }
 
             public T Data;
             public string Event;
-            public Dictionary<string, object> Args;
+            public Dictionary<string, object> Infos;
         }
     }
 }

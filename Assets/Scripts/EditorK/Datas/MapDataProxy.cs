@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 using Assets.Scripts.ProjectK.Base;
 using Assets.Scripts.ProjectK.Settings;
 
 namespace Assets.Scripts.EditorK.Datas
 {
+    using InfoMap = Dictionary<string, object>;
+
     public class MapDataProxy
     {
         private static MapDataProxy instance = new MapDataProxy();
@@ -21,6 +23,48 @@ namespace Assets.Scripts.EditorK.Datas
         {
             DataPath = path;
             repo.New(data, EditorEvent.MAP_LOAD, null);
+        }
+
+        public void AddPath(int startX, int startY, int endX, int endY)
+        {
+            List<MapPathSetting> paths = new List<MapPathSetting>(Data.Paths);
+            MapPathSetting path = new MapPathSetting();
+            path.StartX = startX;
+            path.StartY = startY;
+            path.EndX = endX;
+            path.EndY = endY;
+            path.ColorR = Random.value;
+            path.ColorG = Random.value;
+            path.ColorB = Random.value;
+            paths.Add(path);
+            Data.Paths = paths.ToArray();
+
+            repo.Modify(EditorEvent.MAP_ADD_PATH, null);
+        }
+
+        public void RemovePath(int index)
+        {
+            List<MapPathSetting> paths = new List<MapPathSetting>(Data.Paths);
+            paths.RemoveAt(index);
+            Data.Paths = paths.ToArray();
+
+            InfoMap infos = new InfoMap();
+            infos["index"] = index;
+            repo.Modify(EditorEvent.MAP_ADD_PATH, infos);
+        }
+
+        public void SwapPath(int index1, int index2)
+        {
+            List<MapPathSetting> paths = new List<MapPathSetting>(Data.Paths);
+            MapPathSetting temp = paths[index1];
+            paths[index1] = paths[index2];
+            paths[index2] = temp;
+            Data.Paths = paths.ToArray();
+
+            InfoMap infos = new InfoMap();
+            infos["index1"] = index1;
+            infos["index2"] = index2;
+            repo.Modify(EditorEvent.MAP_SWAP_PATH, infos);
         }
     }
 }

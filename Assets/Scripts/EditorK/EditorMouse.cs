@@ -12,8 +12,8 @@ namespace Assets.Scripts.EditorK
     public enum EditorMouseDataType
     {
         None,
-        MapStart,
-        MapEnd,
+        MapPathStart,
+        MapPathEnd,
     }
 
     public class EditorMouse : DisposableBehaviour
@@ -22,11 +22,23 @@ namespace Assets.Scripts.EditorK
         public static EditorMouse Instance { get { return instance; } }
 
         public MapCell SelectedMapCell { get; private set; }
-        public object Data { get; private set; }
+        public Vector2 SelectedLocation { get { return SelectedMapCell == null ? new Vector2() : SelectedMapCell.Location; } }
+        public Vector2 SelectedPosition { get { return SelectedMapCell == null ? new Vector2() : SelectedMapCell.Position; } }
+        public short SelectedLocationX { get { return SelectedMapCell == null ? (short)0 : SelectedMapCell.X; } }
+        public short SelectedLocationY { get { return SelectedMapCell == null ? (short)0 : SelectedMapCell.Y; } }
+        public float SelectedPositionX { get { return SelectedMapCell == null ? 0 : SelectedMapCell.CenterX; } }
+        public float SelectedPositionY { get { return SelectedMapCell == null ? 0 : SelectedMapCell.CenterY; } }
+
         public EditorMouseDataType DataType { get; private set; }
+        public object Data { get; private set; }
+        public string PreviewPath { get; private set; }
+        private GameObject preview;
 
         private ResourceLoader loader;
         private GameObject selectObject;
+
+        private bool mouseIn = false;
+        private Vector3 lastMousePosition;
 
         public override void Awake()
         {
@@ -70,17 +82,29 @@ namespace Assets.Scripts.EditorK
             }
         }
 
-        public void SetData(EditorMouseDataType dataType, object data)
+        public void SetData(EditorMouseDataType dataType, object data, string previewPath = null)
         {
             DeselectMapCell();
+
             DataType = dataType;
             Data = data;
+            if (previewPath != null && previewPath != PreviewPath)
+            {
+                PreviewPath = previewPath;
+                preview = loader.LoadPrefab(previewPath).Instantiate();
+            }
         }
 
-        public void ClearData()
+        private void ClearData()
         {
             DataType = EditorMouseDataType.None;
             Data = null;
+
+            if (PreviewPath != null)
+            {
+                Destroy(preview);
+                PreviewPath = null;
+            }
         }
 
         public void Clear()
@@ -95,6 +119,8 @@ namespace Assets.Scripts.EditorK
             {
                 if (DataType == EditorMouseDataType.None)
                     SelectMapCell();
+
+                EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_CLICK);
             }
             else if (Input.GetMouseButtonUp(1))
             {
@@ -102,19 +128,44 @@ namespace Assets.Scripts.EditorK
                     DeselectMapCell();
                 else
                     ClearData();
-            }
 
-            EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_CLICK);
+                EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_RIGHT_CLICK);
+            }
         }
 
         public void OnSceneMouseIn()
         {
+            mouseIn = true;
             EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_IN);
         }
 
         public void OnSceneMouseOut()
         {
+            mouseIn = false;
             EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_OUT);
+        }
+
+        void Update()
+        {
+            if (!mouseIn)
+                return;
+
+            Vector3 currentMousePosition = Input.mousePosition;
+            if (currentMousePosition == lastMousePosition)
+                return;
+
+            if (preview != null)
+            {
+                Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                preview.transform.position = new Vector3(worldPoint.x, worldPoint.y);
+            }
+
+            lastMousePosition = currentMousePosition;
+        }
+
+        public void OnSceneMouseMove()
+        {
+
         }
     }
 }

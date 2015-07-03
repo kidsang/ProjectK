@@ -4,31 +4,27 @@ using System.Linq;
 using System.Text;
 using Assets.Scripts.ProjectK.Base;
 using Assets.Scripts.ProjectK.Maps;
+using Assets.Scripts.ProjectK.Settings;
+using Assets.Scripts.EditorK.Datas;
 using UnityEngine;
 
 namespace Assets.Scripts.EditorK.Maps
 {
     public class EditorMap : Map
     {
-        private ResourceLoader loader;
-
-        void Start()
+        public void New(MapSetting setting)
         {
-            loader = new ResourceLoader();
-
             Init(new ResourceLoader());
-            ResizeMap(10, 10);
+            Load(setting);
+            ResizeMap(setting.CellCountX, setting.CellCountY);
         }
 
-        public override void OnDestroy()
+        protected override void OnDispose()
         {
-            if (loader != null)
-            {
-                loader.Dispose();
-                loader = null;
-            }
+            if (Loader != null)
+                Loader.Dispose();
 
-            base.OnDestroy();
+            base.OnDispose();
         }
 
         public void AddCell(short x, short y)
@@ -75,6 +71,11 @@ namespace Assets.Scripts.EditorK.Maps
                 cell.Dispose();
 
             BuildNeighbours();
+        }
+
+        public void ResizeMap(int countX, int countY)
+        {
+            ResizeMap((short)countX, (short)countY);
         }
 
         public void Save(string url)

@@ -74,6 +74,7 @@ namespace Assets.Scripts.ProjectK.Base
 
         virtual protected void OnDispose()
         {
+            Destroy(gameObject);
             EventManager.Instance.UnregisterAll(this);
             onDisposed = true;
         }

@@ -41,15 +41,16 @@ namespace Assets.Scripts.ProjectK.Maps
 
         protected override void OnDispose()
         {
-            foreach (MapCell cell in Cells.Values)
-                cell.Dispose();
-            Cells = null;
+            if (Cells != null)
+            {
+                foreach (MapCell cell in Cells.Values)
+                    cell.Dispose();
+                Cells = null;
+            }
 
             StartLocations = null;
             EndLocations = null;
             Paths = null;
-
-            DestroyObject(MapRoot);
             MapRoot = null;
             Loader = null;
 
@@ -59,8 +60,11 @@ namespace Assets.Scripts.ProjectK.Maps
         public void Load(string url)
         {
             var res = Loader.LoadJsonFile<MapSetting>(url);
-            MapSetting setting = res.Data;
+            Load(res.Data);
+        }
 
+        public void Load(MapSetting setting)
+        {
             Name = setting.Name;
             CellCountX = setting.CellCountX;
             CellCountY = setting.CellCountY;
@@ -68,6 +72,7 @@ namespace Assets.Scripts.ProjectK.Maps
 
             // TODO
             // Load map cells
+            Cells = new Dictionary<int, MapCell>();
 
             BuildNeighbours();
         }
@@ -295,13 +300,9 @@ namespace Assets.Scripts.ProjectK.Maps
         // todo:
 
         private MapCell lastCell;
-        private GameObject dot;
 
         public void Update()
         {
-            if (dot == null)
-                dot = Loader.LoadPrefab("Map/Dot").Instantiate();
-
             if (lastCell != null)
             {
                 lastCell.ToWhite();
@@ -309,14 +310,12 @@ namespace Assets.Scripts.ProjectK.Maps
             }
 
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            dot.transform.position = new Vector3(worldPoint.x, worldPoint.y);
             lastCell = GetCellByWorldXY(worldPoint);
             if (lastCell != null)
             {
                 lastCell.ToBlue();
                 lastCell.ShowNeighbours(true);
             }
-
         }
     }
 }

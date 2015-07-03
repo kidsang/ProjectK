@@ -11,7 +11,19 @@ namespace Assets.Scripts.ProjectK.Settings
         public int CellCountX;
         public int CellCountY;
 
-        public MapCellSetting[] Cells;
+        public MapPathSetting[] Paths = new MapPathSetting[0];
+        public MapCellSetting[] Cells = new MapCellSetting[0];
+    }
+
+    public class MapPathSetting
+    {
+        public int StartX;
+        public int StartY;
+        public int EndX;
+        public int EndY;
+        public float ColorR;
+        public float ColorG;
+        public float ColorB;
     }
 
     public class MapCellSetting

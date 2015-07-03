@@ -23,6 +23,7 @@ namespace Assets.Scripts.EditorK.UI
 
         void Start()
         {
+            EventManager.Instance.Register(this, EditorEvent.MAP_LOAD, OnScreenResize);
         }
 
         void Update()
@@ -38,12 +39,15 @@ namespace Assets.Scripts.EditorK.UI
             }
         }
 
-        private void OnScreenResize()
+        private void OnScreenResize(object[] args = null)
         {
+            EditorMap map = GameEditor.Instance.Map;
+            if (!map)
+                return;
+
             resizing = true;
 
             Camera camera = Camera.main;
-            EditorMap map = GameEditor.Instance.Map;
             Rect viewRect = ViewArea.rect;
             Rect canvasRect = CanvasArea.rect;
 

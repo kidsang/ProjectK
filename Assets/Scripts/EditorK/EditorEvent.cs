@@ -23,5 +23,11 @@ namespace Assets.Scripts.EditorK
 
         // no args
         public static string SCENE_MOUSE_OUT = DefineEvent("SCENE_MOUSE_OUT");
+
+        // --------------------------
+        // 编辑器数据事件
+
+        // no args
+        public static string MAP_LOAD = DefineEvent("MAP_LOAD");
     }
 }

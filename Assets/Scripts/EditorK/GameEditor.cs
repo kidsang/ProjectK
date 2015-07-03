@@ -5,7 +5,9 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.ProjectK.Base;
+using Assets.Scripts.ProjectK.Settings;
 using Assets.Scripts.EditorK.Maps;
+using Assets.Scripts.EditorK.Datas;
 
 namespace Assets.Scripts.EditorK
 {
@@ -14,6 +16,7 @@ namespace Assets.Scripts.EditorK
         private static GameEditor instance;
         public static GameEditor Instance { get { return instance; } }
 
+        private GameObject sceneRoot;
         public EditorMap Map;
         public Canvas UICanvas;
 
@@ -24,12 +27,35 @@ namespace Assets.Scripts.EditorK
             else if (instance != this)
                 throw new Exception("多个GameEditor实例！");
 
+            sceneRoot = gameObject;
             ResourceManager.Init();
         }
 
         void Start()
         {
+            NewMap();
         }
 
+        public void NewMap()
+        {
+            MapSetting data = new MapSetting();
+            data.CellCountX = 10;
+            data.CellCountY = 10;
+            LoadMap(data);
+        }
+
+        public void LoadMap(MapSetting data, string path = null)
+        {
+            if (Map)
+                Map.Dispose();
+
+            GameObject mapRoot = new GameObject("MapRoot");
+            mapRoot.transform.parent = sceneRoot.transform;
+
+            Map = mapRoot.AddComponent<EditorMap>();
+            Map.New(data);
+
+            MapDataProxy.Instance.Load(data, path);
+        }
     }
 }

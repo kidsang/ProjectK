@@ -23,11 +23,16 @@ namespace Assets.Scripts.EditorK.UI
 
         void Start()
         {
-            EventManager.Instance.Register(this, EditorEvent.SCREEN_RESIZE, OnScreenResize);
+            EventManager.Instance.Register(this, EditorEvent.SCREEN_RESIZE, OnNeedUpdate);
+            EventManager.Instance.Register(this, EditorEvent.MAP_LOAD, OnNeedUpdate);
         }
 
-        private void OnScreenResize(object[] args)
+        private void OnNeedUpdate(object[] args = null)
         {
+            EditorMap map = GameEditor.Instance.Map;
+            if (!map)
+                return;
+
             Camera camera = MiniMapCamera;
             Rect viewRect = ViewArea.rect;
             Rect canvasRect = CanvasArea.rect;
@@ -38,7 +43,6 @@ namespace Assets.Scripts.EditorK.UI
                 viewRect.width / canvasRect.width, viewRect.height / canvasRect.height);
             camera.rect = cameraRect;
 
-            EditorMap map = GameEditor.Instance.Map;
             camera.transform.position = new Vector3(map.Width / 2, map.Height / 2, -10);
 
             camera.orthographicSize = map.Height / 2;

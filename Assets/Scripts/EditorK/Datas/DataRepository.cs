@@ -15,8 +15,12 @@ namespace Assets.Scripts.EditorK.Datas
         public void New(T data, string evt, Dictionary<string, object> infos)
         {
             Clear(0);
-            Data = data;
-            Modify(evt, infos);
+            nextIndex = 1;
+            HistoryData current = new HistoryData(data, evt, infos);
+            history.Add(current);
+            Data = Clone(current.Data);
+
+            EventManager.Instance.FireEvent(evt, infos);
         }
 
         public void Modify(string evt, Dictionary<string, object> infos)

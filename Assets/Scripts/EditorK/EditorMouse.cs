@@ -33,12 +33,14 @@ namespace Assets.Scripts.EditorK
         public object Data { get; private set; }
         public string PreviewPath { get; private set; }
         private GameObject preview;
+        private GameObject previewRoot;
 
         private ResourceLoader loader;
         private GameObject selectObject;
 
         private bool mouseIn = false;
         private Vector3 lastMousePosition;
+        private MapCell lastOverMapcell;
 
         public override void Awake()
         {
@@ -90,27 +92,35 @@ namespace Assets.Scripts.EditorK
             Data = data;
             if (previewPath != null && previewPath != PreviewPath)
             {
+                if (previewRoot == null)
+                    previewRoot = new GameObject("MousePreviewRoot");
+
                 PreviewPath = previewPath;
                 preview = loader.LoadPrefab(previewPath).Instantiate();
+                preview.transform.parent = previewRoot.transform;
+                SpriteRenderer renderer = preview.GetComponent<SpriteRenderer>();
+                renderer.color = new Color(1, 1, 1, 0.5f);
             }
         }
 
-        private void ClearData()
+        private void ClearData(bool clearPreview = true)
         {
             DataType = EditorMouseDataType.None;
             Data = null;
 
-            if (PreviewPath != null)
+            if (previewRoot != null && clearPreview)
             {
-                Destroy(preview);
+                Destroy(previewRoot);
+                previewRoot = null;
+                preview = null;
                 PreviewPath = null;
             }
         }
 
-        public void Clear()
+        public void Clear(bool clearPreview = true)
         {
             DeselectMapCell();
-            ClearData();
+            ClearData(clearPreview);
         }
 
         public void OnSceneMouseClick()
@@ -150,15 +160,31 @@ namespace Assets.Scripts.EditorK
             if (!mouseIn)
                 return;
 
+            EditorMap map = GameEditor.Instance.Map;
+            if (!map)
+                return;
+
             Vector3 currentMousePosition = Input.mousePosition;
             if (currentMousePosition == lastMousePosition)
                 return;
 
-            if (preview != null)
+            if (lastOverMapcell != null)
             {
-                Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                preview.transform.position = new Vector3(worldPoint.x, worldPoint.y);
+                lastOverMapcell.ToWhite();
+                lastOverMapcell.ShowNeighbours(false);
             }
+
+            Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            lastOverMapcell = map.GetCellByWorldXY(worldPoint);
+            if (lastOverMapcell != null)
+            {
+                lastOverMapcell.ToBlue();
+                lastOverMapcell.ShowNeighbours(true);
+
+                if (preview != null)
+                    preview.transform.position = lastOverMapcell.Position;
+            }
+
 
             lastMousePosition = currentMousePosition;
         }

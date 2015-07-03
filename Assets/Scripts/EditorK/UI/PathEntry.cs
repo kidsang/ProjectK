@@ -10,7 +10,10 @@ using Assets.Scripts.EditorK.Maps;
 
 namespace Assets.Scripts.EditorK.UI
 {
-    public class PathEntry : DisposableBehaviour
+    public class PathEntry : MonoBehaviour
     {
+        public Image ColorField;
+        public Text StartField;
+        public Text EndField;
     }
 }

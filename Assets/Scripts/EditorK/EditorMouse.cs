@@ -21,7 +21,6 @@ namespace Assets.Scripts.EditorK
         private static EditorMouse instance;
         public static EditorMouse Instance { get { return instance; } }
 
-        public EditorMap Map;
         public MapCell SelectedMapCell { get; private set; }
         public object Data { get; private set; }
         public EditorMouseDataType DataType { get; private set; }
@@ -46,10 +45,14 @@ namespace Assets.Scripts.EditorK
 
         public void SelectMapCell()
         {
+            EditorMap map = GameEditor.Instance.Map;
+            if (!map)
+                return;
+
             DeselectMapCell();
 
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            SelectedMapCell = Map.GetCellByWorldXY(worldPoint);
+            SelectedMapCell = map.GetCellByWorldXY(worldPoint);
 
             if (SelectedMapCell != null)
             {

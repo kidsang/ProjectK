@@ -6,18 +6,26 @@ using Assets.Scripts.ProjectK.Base;
 
 namespace Assets.Scripts.EditorK.Datas
 {
-    public class DataRepository<T>
+    public class DataRepository<T> where T : class, new()
     {
         private List<HistoryData> history = new List<HistoryData>();
         private int nextIndex = 0;
-        private HistoryData current;
+        public T Data { get; private set; }
 
-        public void Operate(T data, string evt, Dictionary<string, object> args)
+        public void New(T data, string evt, Dictionary<string, object> args)
+        {
+            Clear(0);
+            Data = data;
+            Modify(evt, args);
+        }
+
+        public void Modify(string evt, Dictionary<string, object> args)
         {
             Clear(nextIndex);
             nextIndex += 1;
-            current = new HistoryData(data, evt, args);
+            HistoryData current = new HistoryData(Data, evt, args);
             history.Add(current);
+            Data = Clone(current.Data);
 
             EventManager.Instance.FireEvent(evt, args);
         }
@@ -29,7 +37,8 @@ namespace Assets.Scripts.EditorK.Datas
 
             nextIndex -= 1;
             HistoryData last = history[nextIndex];
-            current = history[nextIndex - 1];
+            HistoryData current = history[nextIndex - 1];
+            Data = Clone(current.Data);
 
             EventManager.Instance.FireEvent(last.Event, last.Args);
         }
@@ -39,43 +48,39 @@ namespace Assets.Scripts.EditorK.Datas
             if (nextIndex >= history.Count)
                 return;
 
-            current = history[nextIndex];
+            HistoryData current = history[nextIndex];
+            Data = Clone(current.Data);
             nextIndex += 1;
 
             EventManager.Instance.FireEvent(current.Event, current.Args);
         }
 
-        public void Clear(int toIndex)
+        private void Clear(int toIndex)
         {
             history.RemoveRange(toIndex, history.Count - toIndex);
             nextIndex = toIndex;
 
             if (nextIndex > 0)
-                current = history[nextIndex - 1];
-            else
-                current = null;
-        }
-
-        public void Clear()
-        {
-            Clear(0);
-        }
-
-        public T Data
-        {
-            get 
             {
-                if (current != null)
-                    return current.Data;
-                return default(T);
+                HistoryData current = history[nextIndex - 1];
+                Data = Clone(current.Data);
             }
+            else
+            {
+                Data = null;
+            }
+        }
+
+        private T Clone(T data)
+        {
+            return SimpleJson.DeserializeObject<T>(SimpleJson.SerializeObject(data));
         }
 
         class HistoryData
         {
             public HistoryData(T data, string evt, Dictionary<string, object> args)
             {
-                Data = SimpleJson.DeserializeObject<T>(SimpleJson.SerializeObject(data));
+                Data = data;
                 Event = evt;
                 Args = args;
             }

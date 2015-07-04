@@ -14,12 +14,10 @@ namespace Assets.Scripts.EditorK.UI
 {
     public class PathPanel : DisposableBehaviour
     {
-        private GameObject panelRoot;
-
         public Transform Content;
         public GameObject EntryPrefab;
 
-        private bool newPath = false;
+        private bool operating = false;
         private int pathStartX;
         private int pathStartY;
         private int pathEndX;
@@ -27,34 +25,30 @@ namespace Assets.Scripts.EditorK.UI
 
         void Start()
         {
-            panelRoot = gameObject;
-
             EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_CLICK, OnSceneMouseClick);
             EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_RIGHT_CLICK, OnSceneMouseRightClick);
-            EventManager.Instance.Register(this, EditorEvent.MAP_ADD_PATH, OnAddPath);
-            EventManager.Instance.Register(this, EditorEvent.MAP_REMOVE_PATH, OnRemovePath);
-            EventManager.Instance.Register(this, EditorEvent.MAP_SWAP_PATH, OnSwapPath);
+            EventManager.Instance.Register(this, EditorEvent.MAP_ADD_PATH, OnUpdatePaths);
+            EventManager.Instance.Register(this, EditorEvent.MAP_REMOVE_PATH, OnUpdatePaths);
+            EventManager.Instance.Register(this, EditorEvent.MAP_SWAP_PATH, OnUpdatePaths);
+            EventManager.Instance.Register(this, EditorEvent.MAP_SET_PATH_START, OnUpdatePath);
+            EventManager.Instance.Register(this, EditorEvent.MAP_SET_PATH_END, OnUpdatePath);
+            EventManager.Instance.Register(this, EditorEvent.MAP_SET_PATH_COLOR, OnUpdatePath);
         }
 
         void OnDisable()
         {
-            if (newPath)
-            {
-                newPath = false;
-                EditorMouse.Instance.Clear();
-            }
+            if (operating)
+                StopOperate();
         }
 
         public void OnAddPathButtonClick()
         {
-            newPath = true;
-            EditorMouse mouse = EditorMouse.Instance;
-            mouse.SetData(EditorMouseDataType.MapPathStart, null, "Map/StartMark");
+            OperateMapPathStart(null);
         }
 
         private void OnSceneMouseClick(object[] args)
         {
-            if (!newPath)
+            if (!operating)
                 return;
 
             EditorMouse mouse = EditorMouse.Instance;
@@ -63,51 +57,102 @@ namespace Assets.Scripts.EditorK.UI
                 case EditorMouseDataType.MapPathStart:
                     pathStartX = mouse.SelectedLocationX;
                     pathStartY = mouse.SelectedLocationY;
-                    mouse.SetData(EditorMouseDataType.MapPathEnd, null, "Map/EndMark");
+                    if (mouse.Data == null)
+                    {
+                        OperateMapPathEnd(null);
+                    }
+                    else
+                    {
+                        int index = (int)mouse.Data;
+                        MapDataProxy.Instance.SetPathStart(index, pathStartX, pathStartY);
+                        StopOperate();
+                    }
                     return;
 
                 case EditorMouseDataType.MapPathEnd:
                     pathEndX = mouse.SelectedLocationX;
                     pathEndY = mouse.SelectedLocationY;
-                    mouse.Clear();
-                    newPath = false;
-                    MapDataProxy.Instance.AddPath(pathStartX, pathStartY, pathEndX, pathEndY);
+                    if (mouse.Data == null)
+                    {
+                        MapDataProxy.Instance.AddPath(pathStartX, pathStartY, pathEndX, pathEndY);
+                    }
+                    else
+                    {
+                        int index = (int)mouse.Data;
+                        MapDataProxy.Instance.SetPathEnd(index, pathEndX, pathEndY);
+                    }
+                    StopOperate();
                     return;
             }
         }
 
         private void OnSceneMouseRightClick(object[] args)
         {
-            if (!newPath)
-                return;
-
-            newPath = false;
+            if (operating)
+                StopOperate();
         }
 
-        private void OnAddPath(object[] args)
+        private void OperateMapPathStart(object data)
         {
-            GameObject entryObj = Instantiate(EntryPrefab) as GameObject;
-            entryObj.transform.parent = Content;
-            entryObj.transform.SetSiblingIndex(Content.childCount - 2);
+            operating = true;
+            EditorMouse mouse = EditorMouse.Instance;
+            mouse.SetData(EditorMouseDataType.MapPathStart, data, "Map/StartMark");
+        }
 
-            //Dictionary<string, object> infos = args[0] as Dictionary<string, object>;
+        private void OperateMapPathEnd(object data)
+        {
+            operating = true;
+            EditorMouse mouse = EditorMouse.Instance;
+            mouse.SetData(EditorMouseDataType.MapPathEnd, data, "Map/EndMark");
+        }
+
+        private void StopOperate()
+        {
+            operating = false;
+            EditorMouse mouse = EditorMouse.Instance;
+            mouse.Clear();
+        }
+
+        private void OnUpdatePaths(object[] args)
+        {
             MapSetting data = MapDataProxy.Instance.Data;
-            MapPathSetting pathData = data.Paths[data.Paths.Length - 1];
+            int numPathDatas = data.Paths.Length;
+            int numEntryObjs = Content.childCount - 1;
 
+            for (int i = 0; i < numPathDatas; ++i)
+            {
+                GameObject entryObj;
+                if (i < numEntryObjs)
+                {
+                    entryObj = Content.GetChild(i).gameObject;
+                }
+                else
+                {
+                    entryObj = Instantiate(EntryPrefab) as GameObject;
+                    entryObj.transform.SetParent(Content);
+                    entryObj.transform.SetSiblingIndex(Content.childCount - 2);
+                }
+
+                PathEntry entry = entryObj.GetComponent<PathEntry>();
+                MapPathSetting pathData = data.Paths[i];
+                entry.Load(i, pathData, OperateMapPathStart, OperateMapPathEnd);
+            }
+
+            for (int i = numPathDatas; i < numEntryObjs; ++i)
+            {
+                Destroy(Content.GetChild(i).gameObject);
+            }
+        }
+
+        private void OnUpdatePath(object[] args)
+        {
+            var infos = EditorUtils.GetEventInfos(args);
+            int index = (int)infos["index"];
+
+            MapSetting data = MapDataProxy.Instance.Data;
+            GameObject entryObj = Content.GetChild(index).gameObject;
             PathEntry entry = entryObj.GetComponent<PathEntry>();
-            entry.ColorField.color = new Color(pathData.ColorR, pathData.ColorG, pathData.ColorB);
-            entry.StartField.text = "起点：(" + pathData.StartX + ", " + pathData.StartY + ")";
-            entry.EndField.text = "终点：(" + pathData.EndX + ", " + pathData.EndY + ")";
-        }
-
-        private void OnRemovePath(object[] args)
-        {
-
-        }
-
-        private void OnSwapPath(object[] args)
-        {
-
+            entry.Load(index, data.Paths[index], OperateMapPathStart, OperateMapPathEnd);
         }
     }
 }

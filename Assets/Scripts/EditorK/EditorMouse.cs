@@ -57,7 +57,7 @@ namespace Assets.Scripts.EditorK
             selectObject.SetActive(false);
         }
 
-        public void SelectMapCell()
+        private void SelectMapCell()
         {
             EditorMap map = GameEditor.Instance.Map;
             if (!map)
@@ -75,7 +75,7 @@ namespace Assets.Scripts.EditorK
             }
         }
 
-        public void DeselectMapCell()
+        private void DeselectMapCell()
         {
             if (SelectedMapCell != null)
             {
@@ -86,8 +86,6 @@ namespace Assets.Scripts.EditorK
 
         public void SetData(EditorMouseDataType dataType, object data, string previewPath = null)
         {
-            DeselectMapCell();
-
             DataType = dataType;
             Data = data;
             if (previewPath != null && previewPath != PreviewPath)
@@ -127,18 +125,12 @@ namespace Assets.Scripts.EditorK
         {
             if (Input.GetMouseButtonUp(0))
             {
-                if (DataType == EditorMouseDataType.None)
-                    SelectMapCell();
-
+                SelectMapCell();
                 EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_CLICK);
             }
             else if (Input.GetMouseButtonUp(1))
             {
-                if (DataType == EditorMouseDataType.None)
-                    DeselectMapCell();
-                else
-                    ClearData();
-
+                Clear();
                 EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_RIGHT_CLICK);
             }
         }
@@ -185,13 +177,7 @@ namespace Assets.Scripts.EditorK
                     preview.transform.position = lastOverMapcell.Position;
             }
 
-
             lastMousePosition = currentMousePosition;
-        }
-
-        public void OnSceneMouseMove()
-        {
-
         }
     }
 }

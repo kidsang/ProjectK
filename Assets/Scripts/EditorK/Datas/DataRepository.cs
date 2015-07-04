@@ -63,16 +63,6 @@ namespace Assets.Scripts.EditorK.Datas
         {
             history.RemoveRange(toIndex, history.Count - toIndex);
             nextIndex = toIndex;
-
-            if (nextIndex > 0)
-            {
-                HistoryData current = history[nextIndex - 1];
-                Data = Clone(current.Data);
-            }
-            else
-            {
-                Data = null;
-            }
         }
 
         private T Clone(T data)

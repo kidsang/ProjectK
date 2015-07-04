@@ -42,5 +42,14 @@ namespace Assets.Scripts.EditorK
         // int index1
         // int index2
         public static string MAP_SWAP_PATH = DefineEvent("MAP_SWAP_PATH");
+
+        // int index
+        public static string MAP_SET_PATH_START = DefineEvent("MAP_SET_PATH_START");
+
+        // int index
+        public static string MAP_SET_PATH_END = DefineEvent("MAP_SET_PATH_END");
+
+        // int index
+        public static string MAP_SET_PATH_COLOR = DefineEvent("MAP_SET_PATH_COLOR");
     }
 }

@@ -66,5 +66,39 @@ namespace Assets.Scripts.EditorK.Datas
             infos["index2"] = index2;
             repo.Modify(EditorEvent.MAP_SWAP_PATH, infos);
         }
+
+        public void SetPathStart(int index, int startX, int startY)
+        {
+            MapPathSetting path = Data.Paths[index];
+            path.StartX = startX;
+            path.StartY = startY;
+
+            InfoMap infos = new InfoMap();
+            infos["index"] = index;
+            repo.Modify(EditorEvent.MAP_SET_PATH_START, infos);
+        }
+
+        public void SetPathEnd(int index, int endX, int endY)
+        {
+            MapPathSetting path = Data.Paths[index];
+            path.EndX = endX;
+            path.EndY = endY;
+
+            InfoMap infos = new InfoMap();
+            infos["index"] = index;
+            repo.Modify(EditorEvent.MAP_SET_PATH_END, infos);
+        }
+
+        public void SetPathColor(int index, float colorR, float colorG, float colorB)
+        {
+            MapPathSetting path = Data.Paths[index];
+            path.ColorR = colorR;
+            path.ColorG = colorG;
+            path.ColorB = colorB;
+
+            InfoMap infos = new InfoMap();
+            infos["index"] = index;
+            repo.Modify(EditorEvent.MAP_SET_PATH_COLOR, infos);
+        }
     }
 }

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using ProjectK.Base;
 
-namespace Assets.Scripts.ProjectK.Base.WWWResources
+namespace ProjectK.Base.WWWResources
 {
-    public class ResourceLoader : Assets.Scripts.ProjectK.Base.Disposable
+    public class ResourceLoader : Disposable
     {
         private ResourceManager manager = ResourceManager.Instance;
         private Dictionary<string, Resource> resources = new Dictionary<string, Resource>();

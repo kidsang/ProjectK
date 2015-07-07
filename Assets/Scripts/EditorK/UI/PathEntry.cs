@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using Assets.Scripts.ProjectK;
-using Assets.Scripts.ProjectK.Base;
-using Assets.Scripts.ProjectK.Settings;
-using Assets.Scripts.EditorK.Maps;
+using ProjectK;
+using ProjectK.Base;
 
-namespace Assets.Scripts.EditorK.UI
+namespace EditorK
 {
     public class PathEntry : MonoBehaviour
     {

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Assets.Scripts.ProjectK.Base;
+using ProjectK.Base;
 
-namespace Assets.Scripts.ProjectK.Settings
+namespace ProjectK
 {
     public class SettingManager
     {

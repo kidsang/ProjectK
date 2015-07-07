@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using UnityEngine;
 
-namespace Assets.Scripts.ProjectK.Base
+namespace ProjectK.Base
 {
     public class TextResource : Resource
     {

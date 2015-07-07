@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using Assets.Scripts.ProjectK.Base;
+using ProjectK.Base;
 
-namespace Assets.Scripts.ProjectK.Maps
+namespace ProjectK
 {
     /**
      * MapCell使用Axial坐标系，其中x + y + z = 0，因此只需要x和y的就可以确定一个MapCell。

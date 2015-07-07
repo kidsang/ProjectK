@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Assets.Scripts.ProjectK.Base;
-using Assets.Scripts.ProjectK.Maps;
-using Assets.Scripts.ProjectK.Settings;
-using Assets.Scripts.EditorK.Datas;
 using UnityEngine;
+using ProjectK;
+using ProjectK.Base;
 
-namespace Assets.Scripts.EditorK.Maps
+namespace EditorK
 {
     public class EditorMap : Map
     {

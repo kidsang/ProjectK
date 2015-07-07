@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Assets.Scripts.ProjectK.Scenes
+namespace ProjectK
 {
     public class SceneManager
     {

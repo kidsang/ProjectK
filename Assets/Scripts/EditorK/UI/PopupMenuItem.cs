@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Assets.Scripts.EditorK.UI
+namespace EditorK
 {
     public class PopupMenuItem : MonoBehaviour
     {

@@ -66,12 +66,12 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
-using Assets.Scripts.ProjectK.Base.Reflection;
+using ProjectK.Base.Reflection;
 
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable RedundantExplicitArrayCreation
 // ReSharper disable SuggestUseVarKeywordEvident
-namespace Assets.Scripts.ProjectK.Base
+namespace ProjectK.Base
 {
     /// <summary>
     /// Represents the json array.
@@ -482,7 +482,7 @@ namespace Assets.Scripts.ProjectK.Base
     }
 }
 
-namespace Assets.Scripts.ProjectK.Base
+namespace ProjectK.Base
 {
     /// <summary>
     /// This class encodes and decodes JSON strings.

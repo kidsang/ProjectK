@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections;
-using Assets.Scripts.ProjectK.Settings;
-using Assets.Scripts.ProjectK.Base;
+using ProjectK.Base;
 
-namespace Assets.Scripts.ProjectK
+namespace ProjectK
 {
     public class FuckBase : Disposable
     {

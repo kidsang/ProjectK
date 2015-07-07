@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using Assets.Scripts.ProjectK.Base;
-using Assets.Scripts.ProjectK.Settings;
+using ProjectK;
+using ProjectK.Base;
 
-namespace Assets.Scripts.EditorK.Datas
+namespace EditorK
 {
     using InfoMap = Dictionary<string, object>;
 

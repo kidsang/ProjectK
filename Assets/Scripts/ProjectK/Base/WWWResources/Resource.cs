@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using Assets.Scripts.ProjectK.Base;
+using ProjectK.Base;
 
-namespace Assets.Scripts.ProjectK.Base.WWWResources
+namespace ProjectK.Base.WWWResources
 {
     public enum ResourceState
     {

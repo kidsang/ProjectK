@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Assets.Scripts.ProjectK.Base.WWWResources
+namespace ProjectK.Base.WWWResources
 {
     public class PackedResource : Resource
     {

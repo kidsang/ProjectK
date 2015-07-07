@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 
-namespace Assets.Scripts.ProjectK.Base
+namespace ProjectK.Base
 {
     public enum LogLevel
     {

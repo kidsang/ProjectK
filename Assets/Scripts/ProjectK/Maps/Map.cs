@@ -2,10 +2,9 @@
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using Assets.Scripts.ProjectK.Base;
-using Assets.Scripts.ProjectK.Settings;
+using ProjectK.Base;
 
-namespace Assets.Scripts.ProjectK.Maps
+namespace ProjectK
 {
 
     /**

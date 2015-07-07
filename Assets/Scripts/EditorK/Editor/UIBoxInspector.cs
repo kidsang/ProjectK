@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEditor;
-using Assets.Scripts.EditorK.UI;
+using EditorK;
 
-namespace Assets.Scripts.EditorK.Editor
+namespace EditorK.Editor
 {
     [CustomEditor(typeof(UIBox))]
     public class UIBoxInspector : UnityEditor.Editor

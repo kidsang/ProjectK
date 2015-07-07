@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using Assets.Scripts.ProjectK.Base;
-using Assets.Scripts.ProjectK.Maps;
-using Assets.Scripts.EditorK.Maps;
+using ProjectK;
+using ProjectK.Base;
 
-namespace Assets.Scripts.EditorK
+namespace EditorK
 {
     public enum EditorMouseDataType
     {

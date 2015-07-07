@@ -3,10 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Assets.Scripts.ProjectK.Base;
-using Assets.Scripts.ProjectK.Settings;
+using ProjectK.Base;
 
-namespace Assets.Scripts.ProjectK.Entites
+namespace ProjectK
 {
     public class SceneEntity : DisposableBehaviour
     {

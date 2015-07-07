@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Assets.Scripts.ProjectK.Base
+namespace ProjectK.Base
 {
     public enum ResourceState
     {

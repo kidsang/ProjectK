@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Assets.Scripts.ProjectK.Base;
+using ProjectK.Base;
 
-namespace Assets.Scripts.EditorK.Datas
+namespace EditorK
 {
     public class DataRepository<T> where T : class, new()
     {

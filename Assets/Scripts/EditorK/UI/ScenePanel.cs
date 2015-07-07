@@ -16,13 +16,20 @@ namespace EditorK
         public RectTransform CanvasArea;
         public RectTransform ViewArea;
 
+        public Transform MapPathRoot;
+
+        private ResourceLoader loader;
         private int lastScreenWidth;
         private int lastScreenHeight;
         private bool resizing;
 
         void Start()
         {
+            loader = new ResourceLoader();
+
             EventManager.Instance.Register(this, EditorEvent.MAP_LOAD, OnScreenResize);
+            EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATHS, OnUpdatePaths);
+            EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATH, OnUpdatePath);
         }
 
         void Update()
@@ -114,6 +121,66 @@ namespace EditorK
             Vector3 cameraPosition = camera.transform.position;
             cameraPosition.y = bottom + (top - bottom) * VScrollBar.value;
             camera.transform.position = cameraPosition;
+        }
+
+        private void OnUpdatePaths(object[] args)
+        {
+            MapSetting data = MapDataProxy.Instance.Data;
+            int numPathDatas = data.Paths.Length;
+            int numPathObjs = MapPathRoot.childCount;
+
+            for (int i = 0; i < numPathDatas; ++i)
+            {
+                GameObject pathObj;
+                GameObject startObj;
+                GameObject endObj;
+                if (i < numPathObjs)
+                {
+                    pathObj = MapPathRoot.GetChild(i).gameObject;
+                    startObj = pathObj.transform.GetChild(0).gameObject;
+                    endObj = pathObj.transform.GetChild(1).gameObject;
+                }
+                else
+                {
+                    pathObj = new GameObject("Path" + i);
+                    pathObj.transform.SetParent(MapPathRoot);
+                    startObj = loader.LoadPrefab("Map/StartMark").Instantiate();
+                    startObj.transform.SetParent(pathObj.transform);
+                    endObj = loader.LoadPrefab("Map/EndMark").Instantiate();
+                    endObj.transform.SetParent(pathObj.transform);
+                }
+
+                MapPathSetting pathData = data.Paths[i];
+                SetPath(pathData, startObj, endObj);
+            }
+
+            for (int i = numPathDatas; i < numPathObjs; ++i)
+            {
+                Destroy(MapPathRoot.GetChild(i).gameObject);
+            }
+        }
+
+        private void OnUpdatePath(object[] args)
+        {
+            var infos = EditorUtils.GetEventInfos(args);
+            int index = (int)infos["index"];
+
+            MapSetting data = MapDataProxy.Instance.Data;
+            MapPathSetting pathData = data.Paths[index];
+            GameObject pathObj = MapPathRoot.GetChild(index).gameObject;
+            GameObject startObj = pathObj.transform.GetChild(0).gameObject;
+            GameObject endObj = pathObj.transform.GetChild(1).gameObject;
+            SetPath(pathData, startObj, endObj);
+        }
+
+        private void SetPath(MapPathSetting pathData, GameObject startObj, GameObject endObj)
+        {
+            EditorMap map = GameEditor.Instance.Map;
+            startObj.transform.localPosition = map.GetCell(pathData.StartX, pathData.StartY).Position;
+            endObj.transform.localPosition = map.GetCell(pathData.EndX, pathData.EndY).Position;
+            Color color = new Color(pathData.ColorR, pathData.ColorG, pathData.ColorB);
+            startObj.GetComponent<SpriteRenderer>().color = color;
+            endObj.GetComponent<SpriteRenderer>().color = color;
         }
     }
 }

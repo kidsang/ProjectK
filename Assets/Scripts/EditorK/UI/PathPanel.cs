@@ -24,12 +24,8 @@ namespace EditorK
         {
             EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_CLICK, OnSceneMouseClick);
             EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_RIGHT_CLICK, OnSceneMouseRightClick);
-            EventManager.Instance.Register(this, EditorEvent.MAP_ADD_PATH, OnUpdatePaths);
-            EventManager.Instance.Register(this, EditorEvent.MAP_REMOVE_PATH, OnUpdatePaths);
-            EventManager.Instance.Register(this, EditorEvent.MAP_SWAP_PATH, OnUpdatePaths);
-            EventManager.Instance.Register(this, EditorEvent.MAP_SET_PATH_START, OnUpdatePath);
-            EventManager.Instance.Register(this, EditorEvent.MAP_SET_PATH_END, OnUpdatePath);
-            EventManager.Instance.Register(this, EditorEvent.MAP_SET_PATH_COLOR, OnUpdatePath);
+            EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATHS, OnUpdatePaths);
+            EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATH, OnUpdatePath);
         }
 
         void OnDisable()

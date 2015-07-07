@@ -34,22 +34,9 @@ namespace EditorK
         public static string MAP_LOAD = DefineEvent("MAP_LOAD");
 
         // no args
-        public static string MAP_ADD_PATH = DefineEvent("MAP_ADD_PATH");
+        public static string MAP_UPDATE_PATHS = DefineEvent("MAP_UPDATE_PATHS");
 
         // int index
-        public static string MAP_REMOVE_PATH = DefineEvent("MAP_REMOVE_PATH");
-
-        // int index1
-        // int index2
-        public static string MAP_SWAP_PATH = DefineEvent("MAP_SWAP_PATH");
-
-        // int index
-        public static string MAP_SET_PATH_START = DefineEvent("MAP_SET_PATH_START");
-
-        // int index
-        public static string MAP_SET_PATH_END = DefineEvent("MAP_SET_PATH_END");
-
-        // int index
-        public static string MAP_SET_PATH_COLOR = DefineEvent("MAP_SET_PATH_COLOR");
+        public static string MAP_UPDATE_PATH = DefineEvent("MAP_UPDATE_PATH");
     }
 }

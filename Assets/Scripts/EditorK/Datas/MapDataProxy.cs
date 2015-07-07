@@ -39,7 +39,7 @@ namespace EditorK
             paths.Add(path);
             Data.Paths = paths.ToArray();
 
-            repo.Modify(EditorEvent.MAP_ADD_PATH, null);
+            repo.Modify(EditorEvent.MAP_UPDATE_PATHS, null);
         }
 
         public void RemovePath(int index)
@@ -48,9 +48,7 @@ namespace EditorK
             paths.RemoveAt(index);
             Data.Paths = paths.ToArray();
 
-            InfoMap infos = new InfoMap();
-            infos["index"] = index;
-            repo.Modify(EditorEvent.MAP_ADD_PATH, infos);
+            repo.Modify(EditorEvent.MAP_UPDATE_PATHS, null);
         }
 
         public void SwapPath(int index1, int index2)
@@ -61,10 +59,7 @@ namespace EditorK
             paths[index2] = temp;
             Data.Paths = paths.ToArray();
 
-            InfoMap infos = new InfoMap();
-            infos["index1"] = index1;
-            infos["index2"] = index2;
-            repo.Modify(EditorEvent.MAP_SWAP_PATH, infos);
+            repo.Modify(EditorEvent.MAP_UPDATE_PATHS, null);
         }
 
         public void SetPathStart(int index, int startX, int startY)
@@ -75,7 +70,7 @@ namespace EditorK
 
             InfoMap infos = new InfoMap();
             infos["index"] = index;
-            repo.Modify(EditorEvent.MAP_SET_PATH_START, infos);
+            repo.Modify(EditorEvent.MAP_UPDATE_PATH, infos);
         }
 
         public void SetPathEnd(int index, int endX, int endY)
@@ -86,7 +81,7 @@ namespace EditorK
 
             InfoMap infos = new InfoMap();
             infos["index"] = index;
-            repo.Modify(EditorEvent.MAP_SET_PATH_END, infos);
+            repo.Modify(EditorEvent.MAP_UPDATE_PATH, infos);
         }
 
         public void SetPathColor(int index, float colorR, float colorG, float colorB)
@@ -98,7 +93,7 @@ namespace EditorK
 
             InfoMap infos = new InfoMap();
             infos["index"] = index;
-            repo.Modify(EditorEvent.MAP_SET_PATH_COLOR, infos);
+            repo.Modify(EditorEvent.MAP_UPDATE_PATH, infos);
         }
     }
 }

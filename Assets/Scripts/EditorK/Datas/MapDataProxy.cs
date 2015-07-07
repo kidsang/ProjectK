@@ -19,6 +19,16 @@ namespace EditorK
 
         private DataRepository<MapSetting> repo = new DataRepository<MapSetting>();
 
+        public void Undo()
+        {
+            repo.Undo();
+        }
+
+        public void Redo()
+        {
+            repo.Redo();
+        }
+
         public void Load(MapSetting data, string path = null)
         {
             DataPath = path;

@@ -11,9 +11,20 @@ namespace EditorK
 {
     public class MenuBar : MonoBehaviour
     {
+        private static MenuBar instance;
+        public static MenuBar Instance { get { return instance; } }
+
         private bool menuOpen = false;
         private bool menuClick = false;
         private GameObject currentMenu;
+
+        private void Awake()
+        {
+            if (instance == null)
+                instance = this;
+            else if (instance != this)
+                throw new Exception("多个MenuBar实例！");
+        }
 
         public void OnMenuMouseClick(GameObject menu)
         {
@@ -69,12 +80,32 @@ namespace EditorK
             menuClick = false;
         }
 
-        public void OnUndo()
+        public void NewFile()
+        {
+            GameEditor.Instance.NewMap();
+        }
+
+        public void OpenFile()
+        {
+
+        }
+
+        public void SaveFile()
+        {
+
+        }
+
+        public void SaveFileAs()
+        {
+
+        }
+
+        public void Undo()
         {
             MapDataProxy.Instance.Undo();
         }
 
-        public void OnRedo()
+        public void Redo()
         {
             MapDataProxy.Instance.Redo();
         }

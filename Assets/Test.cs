@@ -29,6 +29,11 @@ namespace ProjectK
 
             System.GC.Collect();
             System.GC.WaitForPendingFinalizers();
+
+            //OpenFileDialog dialog = new OpenFileDialog();
+            //dialog.InitialDirectory = "file://" + UnityEngine.Application.dataPath;
+            //DialogResult result = dialog.ShowDialog();
+            //Log.Info("adf");
         }
 
         void Update()

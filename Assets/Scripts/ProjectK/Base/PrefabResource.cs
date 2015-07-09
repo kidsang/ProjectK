@@ -26,7 +26,8 @@ namespace ProjectK.Base
         {
             if (gameObject != null)
             {
-                Resources.UnloadAsset(gameObject);
+                // 没办法直接Unload一个GameObject，也许只能调用Resources.UnloadUnusedAssets()
+                //Resources.UnloadAsset(gameObject);
                 gameObject = null;
             }
 

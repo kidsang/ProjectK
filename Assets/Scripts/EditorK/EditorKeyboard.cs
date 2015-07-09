@@ -53,14 +53,34 @@ namespace EditorK
             KeyCode key = evt.keyCode;
             switch (key)
             {
+                case KeyCode.N:
+                    if (evt.control)
+                        MenuBar.Instance.NewFile();
+                    return;
+
+                case KeyCode.O:
+                    if (evt.control)
+                        MenuBar.Instance.OpenFile();
+                    return;
+
+                case KeyCode.S:
+                    if (evt.control)
+                    {
+                        if (evt.shift)
+                            MenuBar.Instance.SaveFileAs();
+                        else
+                            MenuBar.Instance.SaveFile();
+                    }
+                    return;
+
                 case KeyCode.Z:
                     if (evt.control)
-                        MapDataProxy.Instance.Undo();
+                        MenuBar.Instance.Redo();
                     return;
 
                 case KeyCode.Y:
                     if (evt.control)
-                        MapDataProxy.Instance.Redo();
+                        MenuBar.Instance.Undo();
                     return;
             }
         }

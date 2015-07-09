@@ -48,7 +48,8 @@ namespace EditorK
                 Map.Dispose();
 
             GameObject mapRoot = new GameObject("MapRoot");
-            mapRoot.transform.parent = sceneRoot.transform;
+            mapRoot.transform.SetParent(sceneRoot.transform);
+            mapRoot.transform.SetSiblingIndex(0);
 
             Map = mapRoot.AddComponent<EditorMap>();
             Map.New(data);

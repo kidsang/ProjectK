@@ -27,7 +27,7 @@ namespace EditorK
         {
             loader = new ResourceLoader();
 
-            EventManager.Instance.Register(this, EditorEvent.MAP_LOAD, OnScreenResize);
+            EventManager.Instance.Register(this, EditorEvent.MAP_LOAD, OnMapLoad);
             EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATHS, OnUpdatePaths);
             EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATH, OnUpdatePath);
         }
@@ -45,7 +45,7 @@ namespace EditorK
             }
         }
 
-        private void OnScreenResize(object[] args = null)
+        private void OnScreenResize()
         {
             EditorMap map = GameEditor.Instance.Map;
             if (!map)
@@ -121,6 +121,12 @@ namespace EditorK
             Vector3 cameraPosition = camera.transform.position;
             cameraPosition.y = bottom + (top - bottom) * VScrollBar.value;
             camera.transform.position = cameraPosition;
+        }
+
+        private void OnMapLoad(object[] args)
+        {
+            OnScreenResize();
+            OnUpdatePaths(null);
         }
 
         private void OnUpdatePaths(object[] args)

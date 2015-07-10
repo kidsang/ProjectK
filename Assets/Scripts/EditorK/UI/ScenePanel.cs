@@ -149,11 +149,11 @@ namespace EditorK
                 else
                 {
                     pathObj = new GameObject("Path" + i);
-                    pathObj.transform.SetParent(MapPathRoot);
+                    pathObj.transform.SetParent(MapPathRoot, false);
                     startObj = loader.LoadPrefab("Map/StartMark").Instantiate();
-                    startObj.transform.SetParent(pathObj.transform);
+                    startObj.transform.SetParent(pathObj.transform, false);
                     endObj = loader.LoadPrefab("Map/EndMark").Instantiate();
-                    endObj.transform.SetParent(pathObj.transform);
+                    endObj.transform.SetParent(pathObj.transform, false);
                 }
 
                 MapPathSetting pathData = data.Paths[i];

@@ -75,12 +75,12 @@ namespace EditorK
 
                 case KeyCode.Z:
                     if (evt.control)
-                        MenuBar.Instance.Redo();
+                        MenuBar.Instance.Undo();
                     return;
 
                 case KeyCode.Y:
                     if (evt.control)
-                        MenuBar.Instance.Undo();
+                        MenuBar.Instance.Redo();
                     return;
             }
         }

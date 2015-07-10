@@ -35,6 +35,12 @@ namespace EditorK
             repo.New(data, EditorEvent.MAP_LOAD, null);
         }
 
+        private void Modify(string evt, InfoMap infos)
+        {
+            repo.Modify(evt, infos);
+            GameEditor.Instance.FileModified = true;
+        }
+
         public void AddPath(int startX, int startY, int endX, int endY)
         {
             List<MapPathSetting> paths = new List<MapPathSetting>(Data.Paths);
@@ -49,7 +55,7 @@ namespace EditorK
             paths.Add(path);
             Data.Paths = paths.ToArray();
 
-            repo.Modify(EditorEvent.MAP_UPDATE_PATHS, null);
+            Modify(EditorEvent.MAP_UPDATE_PATHS, null);
         }
 
         public void RemovePath(int index)
@@ -58,7 +64,7 @@ namespace EditorK
             paths.RemoveAt(index);
             Data.Paths = paths.ToArray();
 
-            repo.Modify(EditorEvent.MAP_UPDATE_PATHS, null);
+           Modify(EditorEvent.MAP_UPDATE_PATHS, null);
         }
 
         public void SwapPath(int index1, int index2)
@@ -69,7 +75,7 @@ namespace EditorK
             paths[index2] = temp;
             Data.Paths = paths.ToArray();
 
-            repo.Modify(EditorEvent.MAP_UPDATE_PATHS, null);
+            Modify(EditorEvent.MAP_UPDATE_PATHS, null);
         }
 
         public void SetPathStart(int index, int startX, int startY)
@@ -80,7 +86,7 @@ namespace EditorK
 
             InfoMap infos = new InfoMap();
             infos["index"] = index;
-            repo.Modify(EditorEvent.MAP_UPDATE_PATH, infos);
+            Modify(EditorEvent.MAP_UPDATE_PATH, infos);
         }
 
         public void SetPathEnd(int index, int endX, int endY)
@@ -91,7 +97,7 @@ namespace EditorK
 
             InfoMap infos = new InfoMap();
             infos["index"] = index;
-            repo.Modify(EditorEvent.MAP_UPDATE_PATH, infos);
+            Modify(EditorEvent.MAP_UPDATE_PATH, infos);
         }
 
         public void SetPathColor(int index, float colorR, float colorG, float colorB)
@@ -103,7 +109,7 @@ namespace EditorK
 
             InfoMap infos = new InfoMap();
             infos["index"] = index;
-            repo.Modify(EditorEvent.MAP_UPDATE_PATH, infos);
+            Modify(EditorEvent.MAP_UPDATE_PATH, infos);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace EditorK
 
         public static void Init()
         {
-            if (instance != null)
+            if (instance == null)
             {
                 instance = new EditorConfig();
                 instance.configPath = Application.dataPath + "/GameEditorConfig.txt";

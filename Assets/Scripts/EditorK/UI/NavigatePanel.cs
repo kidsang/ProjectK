@@ -16,12 +16,15 @@ namespace EditorK
         public RectTransform ViewArea;
         public RectTransform SceneArea;
         public RectTransform Box;
+        public Slider CameraZoomSlider;
 
         private bool draging = false;
         private Vector3 lastMousePosition;
 
         void Start()
         {
+            CameraZoomSlider.value = EditorConfig.Instance.CameraZoom;
+
             EventManager.Instance.Register(this, EditorEvent.SCREEN_RESIZE, OnNeedUpdate);
             EventManager.Instance.Register(this, EditorEvent.MAP_LOAD, OnNeedUpdate);
         }
@@ -57,6 +60,12 @@ namespace EditorK
         {
             draging = true;
             lastMousePosition = Input.mousePosition;
+        }
+
+        public void OnCameraZoomSliderValueChange()
+        {
+            EditorConfig.Instance.CameraZoom = CameraZoomSlider.value;
+            EventManager.Instance.FireEvent(EditorEvent.CAMERA_ZOOM_CHANGE);
         }
 
         void Update()

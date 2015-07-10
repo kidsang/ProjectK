@@ -8,3 +8,5 @@
 /Editor.exe
 /Editor_Data
 /UnityVS.ProjectK.CSharp.Editor.csproj
+/Assets/GameEditorConfig.txt
+/Assets/GameEditorConfig.txt.meta

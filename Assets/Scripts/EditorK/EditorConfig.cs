@@ -105,5 +105,24 @@ namespace EditorK
                 SetValue("LastSaveFilePath", value);
             }
         }
+
+        public float CameraZoom
+        {
+            get
+            {
+                float val = 0.5f;
+                string str = GetValue("CameraZoom");
+                if (!string.IsNullOrEmpty(str))
+                {
+                    if (!float.TryParse(str, out val))
+                        val = 0.5f;
+                }
+                return val;
+            }
+            set
+            {
+                SetValue("CameraZoom", value);
+            }
+        }
     }
 }

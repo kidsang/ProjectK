@@ -27,6 +27,9 @@ namespace EditorK
         // no args
         public static string SCENE_MOUSE_OUT = DefineEvent("SCENE_MOUSE_OUT");
 
+        // no args
+        public static string CAMERA_ZOOM_CHANGE = DefineEvent("CAMERA_ZOOM_CHANGE");
+
         // --------------------------
         // 编辑器数据事件
 

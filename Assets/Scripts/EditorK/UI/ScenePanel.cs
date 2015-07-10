@@ -17,6 +17,7 @@ namespace EditorK
         public RectTransform ViewArea;
 
         public Transform MapPathRoot;
+        public float CameraZoom { get; set; }
 
         private ResourceLoader loader;
         private int lastScreenWidth;
@@ -27,6 +28,7 @@ namespace EditorK
         {
             loader = new ResourceLoader();
 
+            EventManager.Instance.Register(this, EditorEvent.CAMERA_ZOOM_CHANGE, OnScreenResize);
             EventManager.Instance.Register(this, EditorEvent.MAP_LOAD, OnMapLoad);
             EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATHS, OnUpdatePaths);
             EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATH, OnUpdatePath);
@@ -45,7 +47,7 @@ namespace EditorK
             }
         }
 
-        private void OnScreenResize()
+        private void OnScreenResize(object[] args = null)
         {
             EditorMap map = GameEditor.Instance.Map;
             if (!map)
@@ -64,6 +66,9 @@ namespace EditorK
             camera.rect = cameraRect;
             // 同时还要保持MapCell的原始尺寸不被拉伸
             camera.orthographicSize = lastScreenHeight / 2 * GameDefines.PixelToUnitF * cameraRect.height;
+            // 应用镜头缩放
+            CameraZoom = EditorConfig.Instance.CameraZoom;
+            camera.orthographicSize /= CameraZoom;
 
             float cameraHalfHeight = camera.orthographicSize;
             float cameraHalfWidth = cameraHalfHeight * camera.aspect;

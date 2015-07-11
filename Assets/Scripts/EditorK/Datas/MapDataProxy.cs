@@ -7,8 +7,6 @@ using ProjectK.Base;
 
 namespace EditorK
 {
-    using InfoMap = Dictionary<string, object>;
-
     public class MapDataProxy
     {
         private static MapDataProxy instance = new MapDataProxy();

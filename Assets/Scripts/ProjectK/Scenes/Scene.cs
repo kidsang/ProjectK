@@ -19,7 +19,7 @@ namespace ProjectK
             loader = new ResourceLoader();
 
             GameObject mapRoot = new GameObject("MapRoot");
-            mapRoot.transform.parent = sceneRoot.transform;
+            mapRoot.transform.SetParent(sceneRoot.transform, false);
             map = mapRoot.AddComponent<Map>();
             map.Init(loader);
 

@@ -16,7 +16,6 @@ namespace EditorK
         public RectTransform CanvasArea;
         public RectTransform ViewArea;
 
-        public Transform MapPathRoot;
         public float CameraZoom { get; set; }
 
         private ResourceLoader loader;
@@ -29,9 +28,7 @@ namespace EditorK
             loader = new ResourceLoader();
 
             EventManager.Instance.Register(this, EditorEvent.CAMERA_ZOOM_CHANGE, OnScreenResize);
-            EventManager.Instance.Register(this, EditorEvent.MAP_LOAD, OnMapLoad);
-            EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATHS, OnUpdatePaths);
-            EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATH, OnUpdatePath);
+            EventManager.Instance.Register(this, EditorEvent.MAP_LOAD, OnScreenResize);
         }
 
         void Update()
@@ -78,19 +75,23 @@ namespace EditorK
             float top = map.Height - cameraHalfHeight;
 
             Vector3 cameraPosition = camera.transform.position;
-            if (cameraPosition.x < left)
+            if (left > right)
+                cameraPosition.x = (left + right) / 2;
+            else if (cameraPosition.x < left)
                 cameraPosition.x = left;
             else if (cameraPosition.x > right)
                 cameraPosition.x = right;
-            if (cameraPosition.y < bottom)
+            if (bottom > top)
+                cameraPosition.y = (bottom + top) / 2;
+            else if (cameraPosition.y < bottom)
                 cameraPosition.y = bottom;
             else if (cameraPosition.y > top)
                 cameraPosition.y = top;
             camera.transform.position = cameraPosition;
 
-            HScrollBar.size = Mathf.Min(1, viewRect.width / (map.Width * GameDefines.UnitToPixelF));
+            HScrollBar.size = Mathf.Min(1, viewRect.width / (map.Width * GameDefines.UnitToPixelF * CameraZoom));
             HScrollBar.value = Mathf.Min(1, (cameraPosition.x - left) / (right - left));
-            VScrollBar.size = Mathf.Min(1, viewRect.height / (map.Height * GameDefines.UnitToPixelF));
+            VScrollBar.size = Mathf.Min(1, viewRect.height / (map.Height * GameDefines.UnitToPixelF * CameraZoom));
             VScrollBar.value = Mathf.Min(1, (cameraPosition.y - bottom) / (top - bottom));
 
             resizing = false;
@@ -128,70 +129,9 @@ namespace EditorK
             camera.transform.position = cameraPosition;
         }
 
-        private void OnMapLoad(object[] args)
+        public void OnMouseScroll()
         {
-            OnScreenResize();
-            OnUpdatePaths(null);
-        }
-
-        private void OnUpdatePaths(object[] args)
-        {
-            MapSetting data = MapDataProxy.Instance.Data;
-            int numPathDatas = data.Paths.Length;
-            int numPathObjs = MapPathRoot.childCount;
-
-            for (int i = 0; i < numPathDatas; ++i)
-            {
-                GameObject pathObj;
-                GameObject startObj;
-                GameObject endObj;
-                if (i < numPathObjs)
-                {
-                    pathObj = MapPathRoot.GetChild(i).gameObject;
-                    startObj = pathObj.transform.GetChild(0).gameObject;
-                    endObj = pathObj.transform.GetChild(1).gameObject;
-                }
-                else
-                {
-                    pathObj = new GameObject("Path" + i);
-                    pathObj.transform.SetParent(MapPathRoot, false);
-                    startObj = loader.LoadPrefab("Map/StartMark").Instantiate();
-                    startObj.transform.SetParent(pathObj.transform, false);
-                    endObj = loader.LoadPrefab("Map/EndMark").Instantiate();
-                    endObj.transform.SetParent(pathObj.transform, false);
-                }
-
-                MapPathSetting pathData = data.Paths[i];
-                SetPath(pathData, startObj, endObj);
-            }
-
-            for (int i = numPathDatas; i < numPathObjs; ++i)
-            {
-                Destroy(MapPathRoot.GetChild(i).gameObject);
-            }
-        }
-
-        private void OnUpdatePath(object[] args)
-        {
-            var infos = EditorUtils.GetEventInfos(args);
-            int index = (int)infos["index"];
-
-            MapSetting data = MapDataProxy.Instance.Data;
-            MapPathSetting pathData = data.Paths[index];
-            GameObject pathObj = MapPathRoot.GetChild(index).gameObject;
-            GameObject startObj = pathObj.transform.GetChild(0).gameObject;
-            GameObject endObj = pathObj.transform.GetChild(1).gameObject;
-            SetPath(pathData, startObj, endObj);
-        }
-
-        private void SetPath(MapPathSetting pathData, GameObject startObj, GameObject endObj)
-        {
-            EditorMap map = GameEditor.Instance.Map;
-            startObj.transform.localPosition = map.GetCell(pathData.StartX, pathData.StartY).Position;
-            endObj.transform.localPosition = map.GetCell(pathData.EndX, pathData.EndY).Position;
-            Color color = new Color(pathData.ColorR, pathData.ColorG, pathData.ColorB);
-            startObj.GetComponent<SpriteRenderer>().color = color;
-            endObj.GetComponent<SpriteRenderer>().color = color;
+            VScrollBar.value += Input.mouseScrollDelta.y * 0.1f;
         }
     }
 }

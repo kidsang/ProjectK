@@ -15,6 +15,10 @@ namespace EditorK
             Init(new ResourceLoader());
             Load(setting);
             ResizeMap(setting.CellCountX, setting.CellCountY);
+
+            EventManager.Instance.Register(this, EditorEvent.MAP_LOAD, OnUpdatePaths);
+            EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATHS, OnUpdatePaths);
+            EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATH, OnUpdatePath);
         }
 
         protected override void OnDispose()
@@ -29,7 +33,7 @@ namespace EditorK
         {
             // todo:
             GameObject cellObject = Loader.LoadPrefab("Map/MapCell").Instantiate();
-            cellObject.transform.parent = MapRoot.transform;
+            cellObject.transform.SetParent(CellRoot, false);
             MapCell cell = cellObject.AddComponent<MapCell>();
             cell.Init(this, x, y);
             Cells.Add(cell.Key, cell);
@@ -76,9 +80,51 @@ namespace EditorK
             ResizeMap((short)countX, (short)countY);
         }
 
-        public void Save(string url)
+        public void OnUpdatePaths(object[] args)
         {
+            MapSetting data = MapDataProxy.Instance.Data;
+            int numPathDatas = data.Paths.Length;
+            int numPathObjs = PathRoot.childCount;
 
+            for (int i = 0; i < numPathDatas; ++i)
+            {
+                MapPathSetting pathData = data.Paths[i];
+                if (i < numPathObjs)
+                {
+                    UpdatePath(i, new Vector2(pathData.StartX, pathData.StartY),
+                        new Vector2(pathData.EndX, pathData.EndY),
+                        new Color(pathData.ColorR, pathData.ColorG, pathData.ColorB));
+                }
+                else
+                {
+                    AddPath(new Vector2(pathData.StartX, pathData.StartY),
+                        new Vector2(pathData.EndX, pathData.EndY),
+                        new Color(pathData.ColorR, pathData.ColorG, pathData.ColorB));
+                }
+            }
+
+            for (int i = numPathDatas; i < numPathObjs; ++i)
+            {
+                RemovePath(i);
+            }
+
+            CalculatePaths();
+            ToggleShowPaths(true, true);
+        }
+
+        public void OnUpdatePath(object[] args)
+        {
+            InfoMap infos = EditorUtils.GetEventInfos(args);
+            int index = (int)infos["index"];
+            MapSetting data = MapDataProxy.Instance.Data;
+            MapPathSetting pathData = data.Paths[index];
+
+            UpdatePath(index, new Vector2(pathData.StartX, pathData.StartY),
+                new Vector2(pathData.EndX, pathData.EndY),
+                new Color(pathData.ColorR, pathData.ColorG, pathData.ColorB));
+
+            CalculatePath(index);
+            ToggleShowPath(index, true, true);
         }
     }
 }

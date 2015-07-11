@@ -94,7 +94,7 @@ namespace EditorK
 
                 PreviewPath = previewPath;
                 preview = loader.LoadPrefab(previewPath).Instantiate();
-                preview.transform.parent = previewRoot.transform;
+                preview.transform.SetParent(previewRoot.transform, false);
                 SpriteRenderer renderer = preview.GetComponent<SpriteRenderer>();
                 renderer.color = new Color(1, 1, 1, 0.5f);
             }

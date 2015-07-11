@@ -5,11 +5,15 @@ using System.Text;
 
 namespace EditorK
 {
+    public class InfoMap : Dictionary<string, object>
+    {
+    }
+
     public static class EditorUtils
     {
-        public static Dictionary<string, object> GetEventInfos(object[] args)
+        public static InfoMap GetEventInfos(object[] args)
         {
-            return args[0] as Dictionary<string, object>;
+            return args[0] as InfoMap;
         }
     }
 }

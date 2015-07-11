@@ -61,6 +61,16 @@ namespace ProjectK.Base
             return LoadAsync<PrefabResource>(url, onLoadComplete);
         }
 
+        public MaterialResource LoadMaterial(string url)
+        {
+            return Load<MaterialResource>(url);
+        }
+
+        public MaterialResource LoadMaterialAsync(string url, ResourceLoadComplete onLoadComplete = null)
+        {
+            return LoadAsync<MaterialResource>(url, onLoadComplete);
+        }
+
         public T Load<T>(string url) where T: Resource, new()
         {
             Resource res;

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using ProjectK.Base;
+using Vectrosity;
 
 namespace ProjectK
 {
@@ -13,7 +14,9 @@ namespace ProjectK
      */
     public class Map : DisposableBehaviour
     {
-        protected GameObject MapRoot { get; private set; }
+        protected Transform MapRoot { get; private set; }
+        protected Transform CellRoot { get; private set; }
+        protected Transform PathRoot { get; private set; }
         public ResourceLoader Loader { get; private set; }
 
         public string Name { get; protected set; }
@@ -22,20 +25,29 @@ namespace ProjectK
         public int CellCountX { get; protected set; }
         public int CellCountY { get; protected set; }
 
-        protected Dictionary<int, MapCell> Cells { get; set; }
-        protected List<Vector2> StartLocations { get; set; }
-        protected List<Vector2> EndLocations { get; set; }
-        protected List<List<Vector2>> Paths { get; set; }
-        protected List<GameObject> PathObjectRoots { get; set; }
+        public Dictionary<int, MapCell> Cells { get; protected set; }
+        public List<Vector2> StartLocations { get; protected set; }
+        public List<Vector2> EndLocations { get; protected set; }
+        public List<Color> PathColors { get; protected set; }
+        public List<List<Vector2>> Paths { get; protected set; }
+        public List<GameObject> PathObjectRoots { get; protected set; }
+        protected PriorityQueue<MapCell> frontier = new PriorityQueue<MapCell>(); // 用于寻路
 
         internal void Init(ResourceLoader loader)
         {
-            MapRoot = gameObject;
+            MapRoot = gameObject.transform;
+            CellRoot = new GameObject("CellRoot").transform;
+            CellRoot.SetParent(MapRoot, false);
+            PathRoot = new GameObject("PathRoot").transform;
+            PathRoot.SetParent(MapRoot, false);
+
             Loader = loader;
             Cells = new Dictionary<int, MapCell>();
             StartLocations = new List<Vector2>();
             EndLocations = new List<Vector2>();
+            PathColors = new List<Color>();
             Paths = new List<List<Vector2>>();
+            PathObjectRoots = new List<GameObject>();
         }
 
         protected override void OnDispose()
@@ -49,8 +61,11 @@ namespace ProjectK
 
             StartLocations = null;
             EndLocations = null;
+            PathColors = null;
             Paths = null;
             MapRoot = null;
+            CellRoot = null;
+            PathRoot = null;
             Loader = null;
 
             base.OnDispose();
@@ -152,42 +167,45 @@ namespace ProjectK
             return GetDistance(cell1.X, cell1.Y, cell2.X, cell2.Y);
         }
 
-        public void AddStartEnd(Vector2 startLocation, Vector2 endLocation)
+        public void AddPath(Vector2 startLocation, Vector2 endLocation, Color color)
         {
             StartLocations.Add(startLocation);
             EndLocations.Add(endLocation);
+            PathColors.Add(color);
             Paths.Add(new List<Vector2>());
             PathObjectRoots.Add(null);
         }
 
-        public void RemoveStartEnd(int index)
+        public void RemovePath(int index)
         {
             StartLocations.RemoveAt(index);
             EndLocations.RemoveAt(index);
+            PathColors.RemoveAt(index);
             Paths.RemoveAt(index);
+
+            if (PathObjectRoots[index] != null)
+                Destroy(PathObjectRoots[index]);
             PathObjectRoots.RemoveAt(index);
         }
 
-        public void RemoveStartEndByStart(Vector2 startLocation)
+        public void UpdatePath(int index, Vector2 startLocation, Vector2 endLocation, Color color)
         {
-            int index = StartLocations.IndexOf(startLocation);
-            if (index >= 0)
-                RemoveStartEnd(index);
-        }
+            StartLocations[index] = startLocation;
+            EndLocations[index] = endLocation;
+            PathColors[index] = color;
+            Paths[index].Clear();
 
-        public void RemoveStartEndByEnd(Vector2 endLocation)
-        {
-            int index = EndLocations.IndexOf(endLocation);
-            if (index >= 0)
-                RemoveStartEnd(index);
+            if (PathObjectRoots[index] != null)
+                Destroy(PathObjectRoots[index]);
+            PathObjectRoots[index] = null;
         }
 
         public bool CalculatePath(Vector2 startLocation, Vector2 endLocation, List<Vector2> path)
         {
-            Dictionary<MapCell, MapCell> cameFrom = new Dictionary<MapCell,MapCell>();
+            Dictionary<MapCell, MapCell> cameFrom = new Dictionary<MapCell, MapCell>();
             Dictionary<MapCell, int> cost = new Dictionary<MapCell, int>();
-            SortedList<int, MapCell> frontier = new SortedList<int,MapCell>();
             path.Clear();
+            frontier.Clear();
 
             MapCell start = GetCell(startLocation);
             MapCell end = GetCell(endLocation);
@@ -195,15 +213,13 @@ namespace ProjectK
             if (start == null || start.IsObstacle || end == null || end.IsObstacle || start == end)
                 return false;
 
-            frontier.Add(0, start);
+            frontier.Enqueue(start, 0);
             cameFrom[start] = start;
             cost[start] = 0;
 
             while (frontier.Count > 0)
             {
-                current = frontier.Values[0];
-                frontier.RemoveAt(0);
-
+                current = frontier.Dequeue();
                 if (current == end)
                     break;
 
@@ -218,26 +234,30 @@ namespace ProjectK
                     {
                         cost[neighbour] = newCost;
                         int priority = newCost + GetDistance(neighbour, end);
-                        frontier.Add(priority, neighbour);
+                        if (frontier.Contains(neighbour))
+                            frontier.UpdatePriority(neighbour, priority);
+                        else
+                            frontier.Enqueue(neighbour, priority);
                         cameFrom[neighbour] = current;
                     }
                 }
             }
 
             // build path
-            while (current != null)
+            while (current != start)
             {
                 path.Add(current.Location);
                 cameFrom.TryGetValue(current, out current);
             }
+            path.Add(start.Location);
             path.Reverse();
 
             // merge path
-            for (int i = path.Count - 1; i >= 2; --i)
+            for (int i = path.Count - 2; i >= 1; --i)
             {
-                Vector2 p1 = path[i];
-                Vector2 p2 = path[i - 1];
-                Vector2 p3 = path[i - 2];
+                Vector2 p1 = path[i + 1];
+                Vector2 p2 = path[i];
+                Vector2 p3 = path[i - 1];
                 if ((p3.x - p1.x) * (p2.y - p1.y) == (p3.y - p1.y) * (p2.x - p1.x))
                     path.RemoveAt(i);
             }
@@ -245,10 +265,15 @@ namespace ProjectK
             return true;
         }
 
+        public void CalculatePath(int index)
+        {
+            CalculatePath(StartLocations[index], EndLocations[index], Paths[index]);
+        }
+
         public void CalculatePaths()
         {
             for (int i = Paths.Count - 1; i >= 0; --i)
-                CalculatePath(StartLocations[i], EndLocations[i], Paths[i]);
+                CalculatePath(i);
         }
 
         public void ToggleShowPath(int index, bool show, bool update = true)
@@ -263,28 +288,36 @@ namespace ProjectK
 
             if (show && pathObjectRoot == null)
             {
+                Color color = PathColors[index];
+
+                pathObjectRoot = new GameObject("PathObjectRoot");
+                pathObjectRoot.transform.SetParent(PathRoot.transform, false);
+                PathObjectRoots[index] = pathObjectRoot;
+
+                GameObject obj = Loader.LoadPrefab("Map/StartMark").Instantiate();
+                obj.transform.SetParent(pathObjectRoot.transform, false);
+                obj.transform.position = GetCell(StartLocations[index]).Position;
+                obj.GetComponent<SpriteRenderer>().color = color;
+
+                obj = Loader.LoadPrefab("Map/EndMark").Instantiate();
+                obj.transform.SetParent(pathObjectRoot.transform, false);
+                obj.transform.position = GetCell(EndLocations[index]).Position;
+                obj.GetComponent<SpriteRenderer>().color = color;
+
                 List<Vector2> path = Paths[index];
                 int count = path.Count;
                 if (count > 0)
                 {
-                    pathObjectRoot = new GameObject();
-                    pathObjectRoot.transform.parent = MapRoot.transform;
-                    PathObjectRoots[index] = pathObjectRoot;
+                    Vector3[] points = new Vector3[count];
+                    for (int i = 0; i < count; ++i)
+                        points[i] = GetCell(path[i]).Position;
+                    VectorLine line = new VectorLine("PathLine", points, null, 2, LineType.Continuous);
+                    line.color = color;
 
-                    GameObject obj = Loader.LoadPrefab("Map/PathEnd").Instantiate();
-                    obj.transform.parent = pathObjectRoot.transform;
-                    obj.transform.position = path[count - 1];
-
-                    obj = Loader.LoadPrefab("Map/PathStart").Instantiate();
-                    obj.transform.parent = pathObjectRoot.transform;
-                    obj.transform.position = path[0];
-
-                    for (int i = 1; i < count - 1; ++i)
-                    {
-                        obj = Loader.LoadPrefab("Map/PathArrow").Instantiate();
-                        obj.transform.parent = pathObjectRoot.transform;
-                        obj.transform.position = path[i];
-                    }
+                    obj = new GameObject("PathLine");
+                    obj.transform.SetParent(pathObjectRoot.transform, false);
+                    VectorManager.useDraw3D = true;
+                    VectorManager.ObjectSetup(obj, line, Visibility.Dynamic, Brightness.None);
                 }
             }
         }
@@ -293,28 +326,6 @@ namespace ProjectK
         {
             for (int i = Paths.Count - 1; i >= 0; --i)
                 ToggleShowPath(i, show, update);
-        }
-
-        // ----------------
-        // todo:
-
-        private MapCell lastCell;
-
-        public void Update()
-        {
-            if (lastCell != null)
-            {
-                lastCell.ToWhite();
-                lastCell.ShowNeighbours(false);
-            }
-
-            Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            lastCell = GetCellByWorldXY(worldPoint);
-            if (lastCell != null)
-            {
-                lastCell.ToBlue();
-                lastCell.ShowNeighbours(true);
-            }
         }
     }
 }

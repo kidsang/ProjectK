@@ -10,7 +10,7 @@ namespace ProjectK
      * MapCell使用Axial坐标系，其中x + y + z = 0，因此只需要x和y的就可以确定一个MapCell。
      * 参见 http://www.redblobgames.com/grids/hexagons
      */
-    public class MapCell : DisposableBehaviour
+    public class MapCell : DisposableBehaviour, IPriorityQueueNode
     {
         public static readonly float Radius = 1.0f;
         public static readonly float Sqrt3 = Mathf.Sqrt(3.0f);
@@ -27,6 +27,11 @@ namespace ProjectK
         public bool IsObstacle { get; set; }
         public static readonly int NumNeighbours = 6;
         public MapCell[] Neighbours { get; private set; }
+
+        // implements IPriorityQueueNode 
+        public double Priority { get; set; }
+        public long InsertionIndex { get; set; }
+        public int QueueIndex { get; set; }
 
         internal void Init(Map map, short x, short y)
         {
@@ -168,6 +173,11 @@ namespace ProjectK
         public static int MakeKey(short x, short y)
         {
             return (y << 16) | (ushort)x;
+        }
+
+        public override string ToString()
+        {
+            return "MapCell(" + x + "," + y + ")";
         }
     }
 }

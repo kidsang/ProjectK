@@ -6,6 +6,13 @@ using ProjectK.Base;
 
 namespace ProjectK
 {
+    public enum MapCellFlag
+    {
+        None = 0,
+        CanBuild = 1,
+        CanWalk = 2,
+    }
+
     /**
      * MapCell使用Axial坐标系，其中x + y + z = 0，因此只需要x和y的就可以确定一个MapCell。
      * 参见 http://www.redblobgames.com/grids/hexagons
@@ -19,12 +26,12 @@ namespace ProjectK
         public Map Map { get; private set; }
         public ResourceLoader Loader { get; private set; }
 
-        private short x;
-        private short y;
-        private short z;
-        private int key;
+        public short X { get; private set; }
+        public short Y { get; private set; }
+        public short Z { get; private set; }
+        public int Key { get; private set; }
+        public MapCellFlag Flags { get; protected set; }
 
-        public bool IsObstacle { get; set; }
         public static readonly int NumNeighbours = 6;
         public MapCell[] Neighbours { get; private set; }
 
@@ -39,10 +46,10 @@ namespace ProjectK
             Map = map;
             Loader = map.Loader;
 
-            this.x = x;
-            this.y = y;
-            this.z = (short)(-x - y);
-            this.key = MakeKey(x, y);
+            this.X = x;
+            this.Y = y;
+            this.Z = (short)(-x - y);
+            this.Key = MakeKey(x, y);
 
             CellObject.transform.position = new Vector3(CenterX, CenterY);
 
@@ -63,37 +70,17 @@ namespace ProjectK
 
         internal void BuildNeighbours()
         {
-            Neighbours[0] = Map.GetCell(x + 1, y - 1);
-            Neighbours[1] = Map.GetCell(x + 1, y);
-            Neighbours[2] = Map.GetCell(x, y + 1);
-            Neighbours[3] = Map.GetCell(x - 1, y + 1);
-            Neighbours[4] = Map.GetCell(x - 1, y);
-            Neighbours[5] = Map.GetCell(x, y - 1);
-        }
-
-        public short X
-        {
-            get { return x; }
-        }
-
-        public short Y
-        {
-            get { return y; }
-        }
-
-        public short Z
-        {
-            get { return z; }
-        }
-
-        public int Key
-        {
-            get { return key; }
+            Neighbours[0] = Map.GetCell(X + 1, Y - 1);
+            Neighbours[1] = Map.GetCell(X + 1, Y);
+            Neighbours[2] = Map.GetCell(X, Y + 1);
+            Neighbours[3] = Map.GetCell(X - 1, Y + 1);
+            Neighbours[4] = Map.GetCell(X - 1, Y);
+            Neighbours[5] = Map.GetCell(X, Y - 1);
         }
 
         public Vector2 Location
         {
-            get { return new Vector2(x, y); }
+            get { return new Vector2(X, Y); }
         }
 
         public static float HalfWidth
@@ -118,17 +105,47 @@ namespace ProjectK
 
         public float CenterX
         {
-            get { return Radius * 1.5f * x; }
+            get { return Radius * 1.5f * X; }
         }
 
         public float CenterY
         {
-            get { return Radius * Sqrt3 * (y + 0.5f * x); }
+            get { return Radius * Sqrt3 * (Y + 0.5f * X); }
         }
 
         public Vector2 Position
         {
             get { return new Vector2(CenterX, CenterY); }
+        }
+
+        public bool GetFlag(MapCellFlag flag)
+        {
+            return (Flags & flag) != 0;
+        }
+
+        public void SetFlag(MapCellFlag flag, bool value)
+        {
+            if (value)
+                Flags = Flags | flag;
+            else
+                Flags = Flags & (~flag);
+        }
+
+        public bool IsObstacle
+        {
+            get { return !GetFlag(MapCellFlag.CanWalk); }
+        }
+
+        public bool CanWalk
+        {
+            get { return GetFlag(MapCellFlag.CanWalk); }
+            set { SetFlag(MapCellFlag.CanWalk, value); }
+        }
+
+        public bool CanBuild
+        {
+            get { return GetFlag(MapCellFlag.CanBuild); }
+            set { SetFlag(MapCellFlag.CanBuild, value); }
         }
 
         public void ColorTransform(float r = 1, float g = 1, float b = 1, float a = 1)
@@ -177,7 +194,7 @@ namespace ProjectK
 
         public override string ToString()
         {
-            return "MapCell(" + x + "," + y + ")";
+            return "MapCell(" + X + "," + Y + ")";
         }
     }
 }

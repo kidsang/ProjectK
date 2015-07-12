@@ -11,8 +11,18 @@ namespace EditorK
     public enum EditorMouseDataType
     {
         None,
+
+        // int? index
         MapPathStart,
+
+        // int? index
         MapPathEnd,
+
+        // InfoMap
+        //   MapCellFlag flag
+        //   int size
+        //   bool erase
+        TerrainFill,
     }
 
     public class EditorMouse : DisposableBehaviour
@@ -30,7 +40,6 @@ namespace EditorK
 
         public EditorMouseDataType DataType { get; private set; }
         public object Data { get; private set; }
-        public string PreviewPath { get; private set; }
         private GameObject preview;
         private GameObject previewRoot;
 
@@ -83,34 +92,53 @@ namespace EditorK
             }
         }
 
-        public void SetData(EditorMouseDataType dataType, object data, string previewPath = null)
+        public void SetData(EditorMouseDataType dataType, object data, string previewPath)
+        {
+            GameObject preview = null;
+            if (previewPath != null)
+            {
+                preview = loader.LoadPrefab(previewPath).Instantiate();
+                SpriteRenderer renderer = preview.GetComponent<SpriteRenderer>();
+                renderer.color = new Color(1, 1, 1, 0.5f);
+            }
+
+            SetData(dataType, data, preview);
+        }
+
+        public void SetData(EditorMouseDataType dataType, object data, GameObject preview = null)
         {
             DataType = dataType;
             Data = data;
-            if (previewPath != null && previewPath != PreviewPath)
+
+            if (preview != null)
             {
                 if (previewRoot == null)
                     previewRoot = new GameObject("MousePreviewRoot");
 
-                PreviewPath = previewPath;
-                preview = loader.LoadPrefab(previewPath).Instantiate();
                 preview.transform.SetParent(previewRoot.transform, false);
-                SpriteRenderer renderer = preview.GetComponent<SpriteRenderer>();
-                renderer.color = new Color(1, 1, 1, 0.5f);
+                if (lastOverMapcell != null)
+                    preview.transform.position = lastOverMapcell.Position;
+
+                this.preview = preview;
             }
+
+            EventManager.Instance.FireEvent(EditorEvent.MOUSE_SET_DATA);
         }
 
         private void ClearData(bool clearPreview = true)
         {
-            DataType = EditorMouseDataType.None;
-            Data = null;
-
             if (previewRoot != null && clearPreview)
             {
                 Destroy(previewRoot);
                 previewRoot = null;
                 preview = null;
-                PreviewPath = null;
+            }
+
+            if (DataType != EditorMouseDataType.None)
+            {
+                DataType = EditorMouseDataType.None;
+                Data = null;
+                EventManager.Instance.FireEvent(EditorEvent.MOUSE_CLEAR_DATA);
             }
         }
 

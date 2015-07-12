@@ -34,6 +34,7 @@ namespace EditorK.UI
         {
             base.OnDisable();
             ready = false;
+            EditorMouse.Instance.Clear();
         }
 
         public override void Refresh(InfoMap infos)

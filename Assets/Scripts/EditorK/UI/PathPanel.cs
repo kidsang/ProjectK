@@ -14,6 +14,7 @@ namespace EditorK.UI
         public Transform Content;
         public GameObject EntryPrefab;
 
+        private bool initialized = false;
         private bool operating = false;
         private int pathStartX;
         private int pathStartY;
@@ -22,15 +23,28 @@ namespace EditorK.UI
 
         void Start()
         {
-            EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_CLICK, OnSceneMouseClick);
-            EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_RIGHT_CLICK, OnSceneMouseRightClick);
             EventManager.Instance.Register(this, EditorEvent.MAP_LOAD, OnUpdatePaths);
             EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATHS, OnUpdatePaths);
             EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATH, OnUpdatePath);
+
+            if (!initialized)
+            {
+                initialized = true;
+                OnUpdatePaths(null);
+            }
+        }
+
+        void OnEnable()
+        {
+            EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_CLICK, OnSceneMouseClick);
+            EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_RIGHT_CLICK, OnSceneMouseRightClick);
         }
 
         void OnDisable()
         {
+            EventManager.Instance.Unregister(this, EditorEvent.SCENE_MOUSE_CLICK, OnSceneMouseClick);
+            EventManager.Instance.Unregister(this, EditorEvent.SCENE_MOUSE_RIGHT_CLICK, OnSceneMouseRightClick);
+
             if (operating)
                 StopOperate();
         }

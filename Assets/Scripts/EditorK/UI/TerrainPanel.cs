@@ -82,14 +82,9 @@ namespace EditorK.UI
                 {
                     TerrainEntry entry = entryObj.GetComponent<TerrainEntry>();
                     if (entry == selectedEntry)
-                    {
                         DeselectEntry();
-                        EditorMouse.Instance.Clear();
-                    }
                     else
-                    {
                         SelectEntry(i - 1);
-                    }
                 }
             }
         }

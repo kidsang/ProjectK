@@ -187,18 +187,18 @@ namespace EditorK
             if (currentMousePosition == lastMousePosition)
                 return;
 
-            if (lastOverMapcell != null)
-            {
-                lastOverMapcell.ToWhite();
-                lastOverMapcell.ShowNeighbours(false);
-            }
+            //if (lastOverMapcell != null)
+            //{
+            //    lastOverMapcell.ToWhite();
+            //    lastOverMapcell.ShowNeighbours(false);
+            //}
 
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             lastOverMapcell = map.GetCellByWorldXY(worldPoint);
             if (lastOverMapcell != null)
             {
-                lastOverMapcell.ToBlue();
-                lastOverMapcell.ShowNeighbours(true);
+                //lastOverMapcell.ToBlue();
+                //lastOverMapcell.ShowNeighbours(true);
 
                 if (preview != null)
                     preview.transform.position = lastOverMapcell.Position;

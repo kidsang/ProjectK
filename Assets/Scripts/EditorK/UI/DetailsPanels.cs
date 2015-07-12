@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace EditorK
+namespace EditorK.UI
 {
     using DetailsPanelDict = Dictionary<DetailsPanelType, DetailsPanelBase>;
 

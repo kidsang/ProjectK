@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using ProjectK;
 using ProjectK.Base;
 
-namespace EditorK
+namespace EditorK.UI
 {
     public class PathPanel : DisposableBehaviour
     {

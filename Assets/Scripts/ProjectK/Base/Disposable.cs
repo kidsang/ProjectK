@@ -87,23 +87,29 @@ namespace ProjectK.Base
 #if CHECK_DISPOSE
         private string classString;
         private string createStack;
+#endif
         virtual public void Awake()
         {
+#if CHECK_DISPOSE
             classString = this.ToString();
             createStack = Environment.StackTrace;
+#endif
         }
 
         virtual public void OnDestroy()
         {
+#if CHECK_DISPOSE
             if (!disposed && !CheckDisposeUtils.ShutingDown)
                 CheckDisposeUtils.LogCreateStack(classString, createStack);
+#endif
         }
 
         virtual public void OnApplicationQuit()
         {
+#if CHECK_DISPOSE
             CheckDisposeUtils.ShutingDown = true;
-        }
 #endif
+        }
     }
 
 #if CHECK_DISPOSE

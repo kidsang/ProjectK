@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace EditorK
+namespace EditorK.UI
 {
     public class TabGroupPanel : MonoBehaviour
     {

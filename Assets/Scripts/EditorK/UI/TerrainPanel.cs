@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 using ProjectK;
 using ProjectK.Base;
 
-namespace EditorK
+namespace EditorK.UI
 {
     public class TerrainPanel : DisposableBehaviour
     {
@@ -17,8 +17,10 @@ namespace EditorK
 
         private TerrainEntry selectedEntry;
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
+
             for (int i = Content.childCount - 1; i > 0; --i)
                 DestroyImmediate(Content.GetChild(i).gameObject);
 

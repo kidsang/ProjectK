@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using ProjectK.Base;
 
-namespace EditorK
+namespace EditorK.UI
 {
     public class DetailsPanelBase : DisposableBehaviour
     {

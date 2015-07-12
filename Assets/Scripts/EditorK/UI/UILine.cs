@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace EditorK
+namespace EditorK.UI
 {
     [ExecuteInEditMode]
     public class UILine : MonoBehaviour

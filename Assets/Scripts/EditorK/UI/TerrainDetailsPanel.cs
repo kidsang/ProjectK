@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using ProjectK;
 
-namespace EditorK
+namespace EditorK.UI
 {
     public class TerrainDetailsPanel : DetailsPanelBase
     {

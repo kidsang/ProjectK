@@ -19,7 +19,7 @@ namespace ProjectK
      */
     public class MapCell : DisposableBehaviour, IPriorityQueueNode
     {
-        public static readonly float Radius = 1.0f;
+        public static readonly float Radius = MapUtils.Radius;
         public static readonly float Sqrt3 = Mathf.Sqrt(3.0f);
 
         protected GameObject CellObject { get; private set; }
@@ -113,9 +113,9 @@ namespace ProjectK
             get { return Radius * Sqrt3 * (Y + 0.5f * X); }
         }
 
-        public Vector2 Position
+        public Vector3 Position
         {
-            get { return new Vector2(CenterX, CenterY); }
+            get { return new Vector3(CenterX, CenterY); }
         }
 
         public bool GetFlag(MapCellFlag flag)

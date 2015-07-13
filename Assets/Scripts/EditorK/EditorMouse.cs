@@ -32,11 +32,19 @@ namespace EditorK
 
         public MapCell SelectedMapCell { get; private set; }
         public Vector2 SelectedLocation { get { return SelectedMapCell == null ? new Vector2() : SelectedMapCell.Location; } }
-        public Vector2 SelectedPosition { get { return SelectedMapCell == null ? new Vector2() : SelectedMapCell.Position; } }
-        public short SelectedLocationX { get { return SelectedMapCell == null ? (short)0 : SelectedMapCell.X; } }
-        public short SelectedLocationY { get { return SelectedMapCell == null ? (short)0 : SelectedMapCell.Y; } }
+        public Vector3 SelectedPosition { get { return SelectedMapCell == null ? new Vector3() : SelectedMapCell.Position; } }
+        public int SelectedLocationX { get { return SelectedMapCell == null ? 0 : (int)SelectedMapCell.X; } }
+        public int SelectedLocationY { get { return SelectedMapCell == null ? 0 : (int)SelectedMapCell.Y; } }
         public float SelectedPositionX { get { return SelectedMapCell == null ? 0 : SelectedMapCell.CenterX; } }
         public float SelectedPositionY { get { return SelectedMapCell == null ? 0 : SelectedMapCell.CenterY; } }
+
+        public MapCell OverMapCell { get { return lastOverMapcell; } }
+        public Vector2 OverLocation { get { return OverMapCell == null ? new Vector2() : OverMapCell.Location; } }
+        public Vector3 OverPosition { get { return OverMapCell == null ? new Vector3() : OverMapCell.Position; } }
+        public int OverLocationX { get { return OverMapCell == null ? 0 : (int)OverMapCell.X; } }
+        public int OverLocationY { get { return OverMapCell == null ? 0 : (int)OverMapCell.Y; } }
+        public float OverPositionX { get { return OverMapCell == null ? 0 : OverMapCell.CenterX; } }
+        public float OverPositionY { get { return OverMapCell == null ? 0 : OverMapCell.CenterY; } }
 
         public EditorMouseDataType DataType { get; private set; }
         public object Data { get; private set; }
@@ -148,6 +156,19 @@ namespace EditorK
             ClearData(clearPreview);
         }
 
+        private void OnSceneMouseDown()
+        {
+            if (Input.GetMouseButtonUp(0))
+                EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_DOWN);
+            else if (Input.GetMouseButtonUp(1))
+                EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_RIGHT_DOWN);
+        }
+
+        private void OnSceneMouseUp()
+        {
+            EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_UP);
+        }
+
         public void OnSceneMouseClick()
         {
             if (Input.GetMouseButtonUp(0))
@@ -205,6 +226,8 @@ namespace EditorK
             }
 
             lastMousePosition = currentMousePosition;
+
+            EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_OVER_CELL_CHANGE);
         }
     }
 }

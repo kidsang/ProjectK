@@ -123,26 +123,8 @@ namespace ProjectK
 
         public MapCell GetCellByWorldXY(float worldX, float worldY)
         {
-            float fx = worldX * 2 / 3.0f / MapCell.Radius;
-            float fy = (MapCell.Sqrt3 * worldY - worldX) / 3.0f / MapCell.Radius;
-            float fz = -fx - fy;
-
-            float rx = Mathf.Round(fx);
-            float ry = Mathf.Round(fy);
-            float rz = Mathf.Round(fz);
-
-            float dx = Mathf.Abs(rx - fx);
-            float dy = Mathf.Abs(ry - fy);
-            float dz = Mathf.Abs(rz - fz);
-
-            if (dx > dy && dx > dz)
-                rx = -ry - rz;
-            else if (dy > dz)
-                ry = -rx - rz;
-
-            short x = (short)rx;
-            short y = (short)ry;
-            return GetCell(x, y);
+            Vector2 location = MapUtils.PositionToLocation(worldX, worldY);
+            return GetCell(location);
         }
 
         public MapCell GetCellByWorldXY(Vector3 worldPoint)
@@ -152,9 +134,7 @@ namespace ProjectK
 
         public int GetDistance(int x1, int y1, int x2, int y2)
         {
-            int z1 = -x1 - y1;
-            int z2 = -x2 - y2;
-            return (Mathf.Abs(x1 - x2) + Mathf.Abs(y1 - y2) + Mathf.Abs(z1 - z2)) / 2;
+            return MapUtils.Distance(x1, y1, x2, y2);
         }
 
         public int GetDistance(Vector2 location1, Vector2 location2)

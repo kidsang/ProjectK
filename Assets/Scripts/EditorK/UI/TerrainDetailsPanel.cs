@@ -22,6 +22,14 @@ namespace EditorK.UI
         private bool erasing = false;
         private TerrainFlagInfo info;
 
+        public override void Awake()
+        {
+            base.Awake();
+
+            BrushSizeSlider.value = EditorConfig.Instance.TerrainBrushSize;
+            OnSizeSliderValueChange();
+        }
+
         public override void OnEnable()
         {
             base.OnEnable();

@@ -76,53 +76,54 @@ namespace EditorK
             Save();
         }
 
+        public string GetString(string key, string defaultVal = null)
+        {
+            string str = GetValue(key);
+            if (string.IsNullOrEmpty(str))
+                str = defaultVal;
+            return str;
+        }
+
+        public float GetFloat(string key, float defaultVal = 0)
+        {
+            float val = defaultVal;
+            string str = GetValue(key);
+            if (!string.IsNullOrEmpty(str))
+                float.TryParse(str, out val);
+            return val;
+        }
+
+        public int GetInt(string key, int defaultVal = 0)
+        {
+            int val = defaultVal;
+            string str = GetValue(key);
+            if (!string.IsNullOrEmpty(str))
+                int.TryParse(str, out val);
+            return val;
+        }
+
         public string LastOpenFilePath
         {
-            get
-            {
-                string path = GetValue("LastOpenFilePath");
-                if (path == null)
-                    path = Application.dataPath;
-                return path;
-            }
-            set
-            {
-                SetValue("LastOpenFilePath", value);
-            }
+            get { return GetString("LastOpenFilePath", Application.dataPath); }
+            set { SetValue("LastOpenFilePath", value); }
         }
 
         public string LastSaveFilePath
         {
-            get
-            {
-                string path = GetValue("LastSaveFilePath");
-                if (path == null)
-                    path = Application.dataPath;
-                return path;
-            }
-            set
-            {
-                SetValue("LastSaveFilePath", value);
-            }
+            get { return GetString("LastSaveFilePath", Application.dataPath); }
+            set { SetValue("LastSaveFilePath", value); }
         }
 
         public float CameraZoom
         {
-            get
-            {
-                float val = 0.5f;
-                string str = GetValue("CameraZoom");
-                if (!string.IsNullOrEmpty(str))
-                {
-                    if (!float.TryParse(str, out val))
-                        val = 0.5f;
-                }
-                return val;
-            }
-            set
-            {
-                SetValue("CameraZoom", value);
-            }
+            get { return GetFloat("CameraZoom", 0.5f); }
+            set { SetValue("CameraZoom", value); }
+        }
+
+        public int TerrainBrushSize
+        {
+            get { return GetInt("TerrainBrushSize", 1); }
+            set { SetValue("TerrainBrushSize", value); }
         }
     }
 }

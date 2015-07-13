@@ -34,12 +34,6 @@ namespace EditorK
         public static string SCENE_MOUSE_OVER_CELL_CHANGE = DefineEvent("SCENE_MOUSE_OVER_CELL_CHANGE");
 
         // no args
-        public static string SCENE_MOUSE_IN = DefineEvent("SCENE_MOUSE_IN");
-
-        // no args
-        public static string SCENE_MOUSE_OUT = DefineEvent("SCENE_MOUSE_OUT");
-
-        // no args
         public static string CAMERA_ZOOM_CHANGE = DefineEvent("CAMERA_ZOOM_CHANGE");
 
         // no args

@@ -16,6 +16,7 @@ namespace EditorK.UI
         public GameObject EntryPrefab;
 
         private TerrainEntry selectedEntry;
+        private bool draging = false;
 
         public override void Awake()
         {
@@ -40,6 +41,9 @@ namespace EditorK.UI
         private void OnEnable()
         {
             SelectEntry(0);
+            EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_DOWN, OnMouseDown);
+            EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_UP, OnMouseUp);
+            EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_OVER_CELL_CHANGE, OnMouseOverCellChange);
             EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_RIGHT_CLICK, OnMouseRightClick);
         }
 
@@ -47,6 +51,7 @@ namespace EditorK.UI
         {
             EventManager.Instance.UnregisterAll(this);
             DeselectEntry();
+            OnMouseUp(null);
         }
 
         private void SelectEntry(int index)
@@ -92,6 +97,41 @@ namespace EditorK.UI
         private void OnMouseRightClick(object[] args)
         {
             DeselectEntry();
+        }
+
+        private void OnMouseDown(object[] args)
+        {
+            EditorMouse mouse = EditorMouse.Instance;
+            if (mouse.DataType != EditorMouseDataType.TerrainFill)
+                return;
+
+            draging = true;
+            MapDataProxy.Instance.Recording = false;
+            OnMouseOverCellChange(null);
+        }
+
+        private void OnMouseUp(object[] args)
+        {
+            if (!draging)
+                return;
+
+            MapDataProxy.Instance.Recording = true;
+            OnMouseOverCellChange(null);
+        }
+
+        private void OnMouseOverCellChange(object[] args)
+        {
+            EditorMouse mouse = EditorMouse.Instance;
+            MapCell cell = mouse.OverMapCell;
+            if (cell == null)
+                return;
+
+            InfoMap infos = mouse.Data as InfoMap;
+            MapCellFlag flag = (MapCellFlag)infos["flag"];
+            int size = (int)infos["size"];
+            bool erase = (bool)infos["erase"];
+
+            MapDataProxy.Instance.SetTerrainFlag(cell.X, cell.Y, size, flag, !erase);
         }
     }
 }

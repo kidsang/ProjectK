@@ -156,7 +156,7 @@ namespace EditorK
             ClearData(clearPreview);
         }
 
-        private void OnSceneMouseDown()
+        public void OnSceneMouseDown()
         {
             if (Input.GetMouseButtonUp(0))
                 EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_DOWN);
@@ -164,7 +164,7 @@ namespace EditorK
                 EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_RIGHT_DOWN);
         }
 
-        private void OnSceneMouseUp()
+        public void OnSceneMouseUp()
         {
             EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_UP);
         }
@@ -181,18 +181,6 @@ namespace EditorK
                 Clear();
                 EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_RIGHT_CLICK);
             }
-        }
-
-        public void OnSceneMouseIn()
-        {
-            mouseIn = true;
-            EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_IN);
-        }
-
-        public void OnSceneMouseOut()
-        {
-            mouseIn = false;
-            EventManager.Instance.FireEvent(EditorEvent.SCENE_MOUSE_OUT);
         }
 
         void Update()

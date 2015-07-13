@@ -17,6 +17,12 @@ namespace EditorK
 
         private DataRepository<MapSetting> repo = new DataRepository<MapSetting>();
 
+        public bool Recording
+        {
+            get { return repo.Recording; }
+            set { repo.Recording = value; }
+        }
+
         public void Undo()
         {
             repo.Undo();
@@ -108,6 +114,11 @@ namespace EditorK
             InfoMap infos = new InfoMap();
             infos["index"] = index;
             Modify(EditorEvent.MAP_UPDATE_PATH, infos);
+        }
+
+        public void SetTerrainFlag(int x, int y, int radius, MapCellFlag flag, bool apply)
+        {
+
         }
     }
 }

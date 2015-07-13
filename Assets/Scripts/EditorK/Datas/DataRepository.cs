@@ -11,6 +11,7 @@ namespace EditorK
         private List<HistoryData> history = new List<HistoryData>();
         private int nextIndex = 0;
         public T Data { get; private set; }
+        public bool Recording { get; set; }
 
         public void New(T data, string evt, Dictionary<string, object> infos)
         {
@@ -25,11 +26,14 @@ namespace EditorK
 
         public void Modify(string evt, Dictionary<string, object> infos)
         {
-            Clear(nextIndex);
-            nextIndex += 1;
-            HistoryData current = new HistoryData(Data, evt, infos);
-            history.Add(current);
-            Data = Clone(current.Data);
+            if (Recording)
+            {
+                Clear(nextIndex);
+                nextIndex += 1;
+                HistoryData current = new HistoryData(Data, evt, infos);
+                history.Add(current);
+                Data = Clone(current.Data);
+            }
 
             EventManager.Instance.FireEvent(evt, infos);
         }

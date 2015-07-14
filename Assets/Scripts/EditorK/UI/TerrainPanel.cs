@@ -41,9 +41,9 @@ namespace EditorK.UI
         private void OnEnable()
         {
             SelectEntry(0);
-            EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_DOWN, OnMouseDown);
-            EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_UP, OnMouseUp);
-            EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_OVER_CELL_CHANGE, OnMouseOverCellChange);
+            EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_DOWN, OnSceneMouseDown);
+            EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_UP, OnSceneMouseUp);
+            EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_OVER_CELL_CHANGE, OnSceneMouseOverCellChange);
             EventManager.Instance.Register(this, EditorEvent.SCENE_MOUSE_RIGHT_CLICK, OnMouseRightClick);
         }
 
@@ -51,7 +51,7 @@ namespace EditorK.UI
         {
             EventManager.Instance.UnregisterAll(this);
             DeselectEntry();
-            OnMouseUp(null);
+            OnSceneMouseUp(null);
         }
 
         private void SelectEntry(int index)
@@ -99,7 +99,7 @@ namespace EditorK.UI
             DeselectEntry();
         }
 
-        private void OnMouseDown(object[] args)
+        private void OnSceneMouseDown(object[] args)
         {
             EditorMouse mouse = EditorMouse.Instance;
             if (mouse.DataType != EditorMouseDataType.TerrainFill)
@@ -107,20 +107,24 @@ namespace EditorK.UI
 
             draging = true;
             MapDataProxy.Instance.Recording = false;
-            OnMouseOverCellChange(null);
+            OnSceneMouseOverCellChange(null);
         }
 
-        private void OnMouseUp(object[] args)
+        private void OnSceneMouseUp(object[] args)
         {
             if (!draging)
                 return;
 
             MapDataProxy.Instance.Recording = true;
-            OnMouseOverCellChange(null);
+            OnSceneMouseOverCellChange(null);
+            draging = false;
         }
 
-        private void OnMouseOverCellChange(object[] args)
+        private void OnSceneMouseOverCellChange(object[] args)
         {
+            if (!draging)
+                return;
+
             EditorMouse mouse = EditorMouse.Instance;
             MapCell cell = mouse.OverMapCell;
             if (cell == null)
@@ -131,7 +135,7 @@ namespace EditorK.UI
             int size = (int)infos["size"];
             bool erase = (bool)infos["erase"];
 
-            MapDataProxy.Instance.SetTerrainFlag(cell.X, cell.Y, size, flag, !erase);
+            MapDataProxy.Instance.SetTerrainFlag(cell.X, cell.Y, size - 1, flag, !erase);
         }
     }
 }

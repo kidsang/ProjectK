@@ -10,15 +10,18 @@ namespace EditorK
 {
     public class EditorMap : Map
     {
+        private Dictionary<MapCellFlag, Transform> terrainRoots = new Dictionary<MapCellFlag, Transform>();
+
         public void New(MapSetting setting)
         {
             Init(new ResourceLoader());
-            Load(setting);
+            //Load(setting);
             ResizeMap(setting.CellCountX, setting.CellCountY);
 
             EventManager.Instance.Register(this, EditorEvent.MAP_LOAD, OnUpdatePaths);
             EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATHS, OnUpdatePaths);
             EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATH, OnUpdatePath);
+            EventManager.Instance.Register(this, EditorEvent.MAP_TERRAIN_UPDATE, OnUpdateTerrain);
         }
 
         protected override void OnDispose()
@@ -27,16 +30,6 @@ namespace EditorK
                 Loader.Dispose();
 
             base.OnDispose();
-        }
-
-        public void AddCell(short x, short y)
-        {
-            // todo:
-            GameObject cellObject = Loader.LoadPrefab("Map/MapCell").Instantiate();
-            cellObject.transform.SetParent(CellRoot, false);
-            MapCell cell = cellObject.AddComponent<MapCell>();
-            cell.Init(this, x, y);
-            Cells.Add(cell.Key, cell);
         }
 
         public void ResizeMap(short countX, short countY)
@@ -55,7 +48,7 @@ namespace EditorK
                     short x = i;
                     short y = (short)(j - i / 2);
 
-                    int key = MapCell.MakeKey(x, y);
+                    int key = MapUtils.MakeKey(x, y);
                     if (oldCells.ContainsKey(key))
                     {
                         MapCell cell = oldCells[key];
@@ -64,7 +57,11 @@ namespace EditorK
                     }
                     else
                     {
-                        AddCell(x, y);
+                        GameObject cellObject = Loader.LoadPrefab("Map/MapCell").Instantiate();
+                        cellObject.transform.SetParent(CellRoot, false);
+                        MapCell cell = cellObject.AddComponent<MapCell>();
+                        cell.Init(this, x, y);
+                        Cells.Add(cell.Key, cell);
                     }
                 }
             }
@@ -80,7 +77,30 @@ namespace EditorK
             ResizeMap((short)countX, (short)countY);
         }
 
-        public void OnUpdatePaths(object[] args)
+        public void LoadTerrain(MapSetting setting)
+        {
+            Dictionary<int, MapCellSetting> cellSettings = MapUtils.ArrayToDict(setting.Cells);
+            for (short j = 0; j < CellCountY; ++j)
+            {
+                for (short i = 0; i < CellCountX; ++i)
+                {
+                    short x = i;
+                    short y = (short)(j - i / 2);
+                    int key = MapUtils.MakeKey(x, y);
+
+                    MapCell cell = GetCell(x, y);
+                    cell.Flags = 0;
+
+                    MapCellSetting cellSetting;
+                    if (cellSettings.TryGetValue(key, out cellSetting))
+                    {
+                        cell.Flags = cellSetting.Flags;
+                    }
+                }
+            }
+        }
+
+        private void OnUpdatePaths(object[] args)
         {
             MapSetting data = MapDataProxy.Instance.Data;
             int numPathDatas = data.Paths.Length;
@@ -112,7 +132,7 @@ namespace EditorK
             ToggleShowPaths(true, true);
         }
 
-        public void OnUpdatePath(object[] args)
+        private void OnUpdatePath(object[] args)
         {
             InfoMap infos = EditorUtils.GetEventInfos(args);
             int index = (int)infos["index"];
@@ -125,6 +145,74 @@ namespace EditorK
 
             CalculatePath(index);
             ToggleShowPath(index, true, true);
+        }
+
+        private List<MapCell> GetCellsByFlag(MapCellFlag flag)
+        {
+            List<MapCell> ret = new List<MapCell>();
+            foreach (MapCell cell in Cells.Values)
+            {
+                if (cell.HasFlag(flag))
+                    ret.Add(cell);
+            }
+            return ret;
+        }
+
+        public void ToggleShowTerrain(MapCellFlag flag, bool show)
+        {
+            Transform root;
+            if (show)
+            {
+                if (!terrainRoots.TryGetValue(flag, out root))
+                {
+                    root = new GameObject("Terrain_" + Enum.GetName(typeof(MapCellFlag), flag)).transform;
+                    root.SetParent(MapRoot, false);
+                    terrainRoots.Add(flag, root);
+                }
+
+                Color color = TerrainFlagInfo.GetColorByFlag(flag);
+                List<MapCell> cells = GetCellsByFlag(flag);
+                int cellCount = cells.Count;
+                int childCount = root.childCount;
+                for (int i = 0; i < cellCount; ++i)
+                {
+                    MapCell cell = cells[i];
+                    Transform terrainMark;
+                    if (i >= childCount)
+                    {
+                        GameObject terrainMarkObj = Loader.LoadPrefab("Map/TerrainMark").Instantiate();
+                        terrainMarkObj.GetComponent<SpriteRenderer>().color = color;
+                        terrainMark = terrainMarkObj.transform;
+                        terrainMark.SetParent(root, false);
+                    }
+                    else
+                    {
+                        terrainMark = root.GetChild(i);
+                    }
+                    terrainMark.position = cell.Position;
+                }
+
+                for (int i = cellCount; i < childCount; ++i)
+                    Destroy(root.GetChild(i).gameObject);
+            }
+            else
+            {
+                if (terrainRoots.TryGetValue(flag, out root))
+                {
+                    Destroy(root.gameObject);
+                    terrainRoots.Remove(flag);
+                }
+            }
+        }
+
+        private void OnUpdateTerrain(object[] args)
+        {
+            MapSetting setting = MapDataProxy.Instance.Data;
+            LoadTerrain(setting);
+
+            InfoMap infos = EditorUtils.GetEventInfos(args);
+            MapCellFlag flag = (MapCellFlag)infos["flag"];
+            ToggleShowTerrain(flag, true);
         }
     }
 }

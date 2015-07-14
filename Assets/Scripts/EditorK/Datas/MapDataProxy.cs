@@ -118,7 +118,44 @@ namespace EditorK
 
         public void SetTerrainFlag(int x, int y, int radius, MapCellFlag flag, bool apply)
         {
+            Dictionary<int, MapCellSetting> cellSettings = MapUtils.ArrayToDict(Data.Cells);
+            EditorMap map = GameEditor.Instance.Map;
+            Vector2[] locations = MapUtils.Circle(x, y, radius);
+            foreach (Vector2 location in locations)
+            {
+                MapCell cell = map.GetCell(location);
+                if (cell == null)
+                    continue;
 
+                if (apply)
+                {
+                    MapCellSetting cellSetting;
+                    if (!cellSettings.TryGetValue(cell.Key, out cellSetting))
+                    {
+                        cellSetting = new MapCellSetting();
+                        cellSetting.X = cell.X;
+                        cellSetting.Y = cell.Y;
+                        cellSettings.Add(cell.Key, cellSetting);
+                    }
+                    cellSetting.Flags |= (int)flag;
+                }
+                else
+                {
+                    MapCellSetting cellSetting;
+                    if (cellSettings.TryGetValue(cell.Key, out cellSetting))
+                    {
+                        cellSetting.Flags &= (~(int)flag);
+                        if (cellSetting.Flags == 0)
+                            cellSettings.Remove(cell.Key);
+                    }
+                }
+            }
+
+            Data.Cells = MapUtils.DictToArray(cellSettings);
+
+            InfoMap infos = new InfoMap();
+            infos["flag"] = flag;
+            Modify(EditorEvent.MAP_TERRAIN_UPDATE, infos);
         }
     }
 }

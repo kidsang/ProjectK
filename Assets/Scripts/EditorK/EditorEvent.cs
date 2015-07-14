@@ -22,13 +22,19 @@ namespace EditorK
         public static string SCENE_MOUSE_RIGHT_DOWN = DefineEvent("SCENE_MOUSE_RIGHT_DOWN");
 
         // no args
-        public static string SCENE_MOUSE_UP = DefineEvent("SCENE_MOUSE_DOWN");
+        public static string SCENE_MOUSE_UP = DefineEvent("SCENE_MOUSE_UP");
 
         // no args
         public static string SCENE_MOUSE_CLICK = DefineEvent("SCENE_MOUSE_CLICK");
 
         // no args
         public static string SCENE_MOUSE_RIGHT_CLICK = DefineEvent("SCENE_MOUSE_RIGHT_CLICK");
+
+        // no args
+        public static string SCENE_MOUSE_IN = DefineEvent("SCENE_MOUSE_IN");
+
+        // no args
+        public static string SCENE_MOUSE_OUT = DefineEvent("SCENE_MOUSE_OUT");
 
         // no args
         public static string SCENE_MOUSE_OVER_CELL_CHANGE = DefineEvent("SCENE_MOUSE_OVER_CELL_CHANGE");
@@ -53,5 +59,8 @@ namespace EditorK
 
         // int index
         public static string MAP_UPDATE_PATH = DefineEvent("MAP_UPDATE_PATH");
+
+        // MapCellFlag flag
+        public static string MAP_TERRAIN_UPDATE = DefineEvent("MAP_TERRAIN_UPDATE");
     }
 }

@@ -105,7 +105,7 @@ namespace ProjectK
 
         public MapCell GetCell(short x, short y)
         {
-            int key = MapCell.MakeKey(x, y);
+            int key = MapUtils.MakeKey(x, y);
             MapCell cell = null;
             Cells.TryGetValue(key, out cell);
             return cell;

@@ -14,6 +14,10 @@ namespace ProjectK
             new Vector2(1, -1), new Vector2(1, 0), new Vector2(0, 1),
             new Vector2(-1, 1), new Vector2(-1, 0), new Vector2(0, -1)
                                                       };
+        public static int MakeKey(short x, short y)
+        {
+            return (y << 16) | (ushort)x;
+        }
 
         public static Vector3 LocationToPosition(int x, int y)
         {
@@ -138,10 +142,23 @@ namespace ProjectK
             Vector2[] ret = new Vector2[count];
 
             int index = 0;
-            for (int i = 0; i < radius; ++i)
+            for (int i = 0; i <= radius; ++i)
                 Ring(x, y, radius, ret, ref index);
 
             return ret;
+        }
+
+        public static Dictionary<int, MapCellSetting> ArrayToDict(MapCellSetting[] cellSettings)
+        {
+            Dictionary<int, MapCellSetting> ret = new Dictionary<int, MapCellSetting>();
+            foreach (MapCellSetting cellSetting in cellSettings)
+                ret[MapUtils.MakeKey((short)cellSetting.X, (short)cellSetting.Y)] = cellSetting;
+            return ret;
+        }
+
+        public static MapCellSetting[] DictToArray(Dictionary<int, MapCellSetting> cellSettings)
+        {
+            return cellSettings.Values.ToArray();
         }
     }
 }

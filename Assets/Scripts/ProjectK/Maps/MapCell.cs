@@ -30,7 +30,7 @@ namespace ProjectK
         public short Y { get; private set; }
         public short Z { get; private set; }
         public int Key { get; private set; }
-        public MapCellFlag Flags { get; protected set; }
+        public int Flags { get; set; }
 
         public static readonly int NumNeighbours = 6;
         public MapCell[] Neighbours { get; private set; }
@@ -49,7 +49,7 @@ namespace ProjectK
             this.X = x;
             this.Y = y;
             this.Z = (short)(-x - y);
-            this.Key = MakeKey(x, y);
+            this.Key = MapUtils.MakeKey(x, y);
 
             CellObject.transform.position = new Vector3(CenterX, CenterY);
 
@@ -118,33 +118,33 @@ namespace ProjectK
             get { return new Vector3(CenterX, CenterY); }
         }
 
-        public bool GetFlag(MapCellFlag flag)
+        public bool HasFlag(MapCellFlag flag)
         {
-            return (Flags & flag) != 0;
+            return (Flags & (int)flag) != 0;
         }
 
         public void SetFlag(MapCellFlag flag, bool value)
         {
             if (value)
-                Flags = Flags | flag;
+                Flags = Flags | (int)flag;
             else
-                Flags = Flags & (~flag);
+                Flags = Flags & (~(int)flag);
         }
 
         public bool IsObstacle
         {
-            get { return !GetFlag(MapCellFlag.CanWalk); }
+            get { return !HasFlag(MapCellFlag.CanWalk); }
         }
 
         public bool CanWalk
         {
-            get { return GetFlag(MapCellFlag.CanWalk); }
+            get { return HasFlag(MapCellFlag.CanWalk); }
             set { SetFlag(MapCellFlag.CanWalk, value); }
         }
 
         public bool CanBuild
         {
-            get { return GetFlag(MapCellFlag.CanBuild); }
+            get { return HasFlag(MapCellFlag.CanBuild); }
             set { SetFlag(MapCellFlag.CanBuild, value); }
         }
 
@@ -185,11 +185,6 @@ namespace ProjectK
                         cell.ColorTransform();
                 }
             }
-        }
-
-        public static int MakeKey(short x, short y)
-        {
-            return (y << 16) | (ushort)x;
         }
 
         public override string ToString()

@@ -17,6 +17,7 @@ namespace EditorK.UI
 
         private TerrainEntry selectedEntry;
         private bool draging = false;
+        private int visibleFlags;
 
         public override void Awake()
         {
@@ -36,6 +37,12 @@ namespace EditorK.UI
 
                 entryObj.GetComponent<Button>().onClick.AddListener(OnMouseClick);
             }
+        }
+
+        private void Start()
+        {
+            visibleFlags = EditorConfig.Instance.TerrainVisibleFlags;
+            // TODO:
         }
 
         private void OnEnable()

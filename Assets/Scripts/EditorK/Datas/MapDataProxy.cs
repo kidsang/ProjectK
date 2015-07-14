@@ -137,14 +137,14 @@ namespace EditorK
                         cellSetting.Y = cell.Y;
                         cellSettings.Add(cell.Key, cellSetting);
                     }
-                    cellSetting.Flags |= (int)flag;
+                    EditorUtils.SetFlag(ref cellSetting.Flags, (int)flag, apply);
                 }
                 else
                 {
                     MapCellSetting cellSetting;
                     if (cellSettings.TryGetValue(cell.Key, out cellSetting))
                     {
-                        cellSetting.Flags &= (~(int)flag);
+                        EditorUtils.SetFlag(ref cellSetting.Flags, (int)flag, apply);
                         if (cellSetting.Flags == 0)
                             cellSettings.Remove(cell.Key);
                     }

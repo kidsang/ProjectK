@@ -16,11 +16,14 @@ namespace EditorK.UI
         public Text FlagField;
         public Toggle VisibleField;
 
+        public MapCellFlag Flag;
+
         public void Load(TerrainFlagInfo info)
         {
             ColorField.color = info.Color;
             NameField.text = info.Name;
             FlagField.text = info.FlagName;
+            Flag = info.Flag;
         }
 
         public void Select()

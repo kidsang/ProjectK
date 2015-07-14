@@ -15,5 +15,18 @@ namespace EditorK
         {
             return args[0] as InfoMap;
         }
+
+        public static void SetFlag(ref int flags, int flag, bool value)
+        {
+            if (value)
+                flags |= flag;
+            else
+                flags &= ~flag;
+        }
+
+        public static bool HasFlag(int flags, int flag)
+        {
+            return (flags & flag) != 0;
+        }
     }
 }

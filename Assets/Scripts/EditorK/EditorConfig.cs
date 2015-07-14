@@ -125,5 +125,11 @@ namespace EditorK
             get { return GetInt("TerrainBrushSize", 1); }
             set { SetValue("TerrainBrushSize", value); }
         }
+
+        public int TerrainVisibleFlags
+        {
+            get { return GetInt("TerrainVisibleFlags", 0); }
+            set { SetValue("TerrainVisibleFlags", value); }
+        }
     }
 }

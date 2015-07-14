@@ -18,7 +18,7 @@ namespace EditorK
             //Load(setting);
             ResizeMap(setting.CellCountX, setting.CellCountY);
 
-            EventManager.Instance.Register(this, EditorEvent.MAP_LOAD, OnUpdatePaths);
+            EventManager.Instance.Register(this, EditorEvent.MAP_LOAD, OnLoadMap);
             EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATHS, OnUpdatePaths);
             EventManager.Instance.Register(this, EditorEvent.MAP_UPDATE_PATH, OnUpdatePath);
             EventManager.Instance.Register(this, EditorEvent.MAP_TERRAIN_UPDATE, OnUpdateTerrain);
@@ -75,29 +75,6 @@ namespace EditorK
         public void ResizeMap(int countX, int countY)
         {
             ResizeMap((short)countX, (short)countY);
-        }
-
-        public void LoadTerrain(MapSetting setting)
-        {
-            Dictionary<int, MapCellSetting> cellSettings = MapUtils.ArrayToDict(setting.Cells);
-            for (short j = 0; j < CellCountY; ++j)
-            {
-                for (short i = 0; i < CellCountX; ++i)
-                {
-                    short x = i;
-                    short y = (short)(j - i / 2);
-                    int key = MapUtils.MakeKey(x, y);
-
-                    MapCell cell = GetCell(x, y);
-                    cell.Flags = 0;
-
-                    MapCellSetting cellSetting;
-                    if (cellSettings.TryGetValue(key, out cellSetting))
-                    {
-                        cell.Flags = cellSetting.Flags;
-                    }
-                }
-            }
         }
 
         private void OnUpdatePaths(object[] args)
@@ -207,12 +184,44 @@ namespace EditorK
 
         private void OnUpdateTerrain(object[] args)
         {
-            MapSetting setting = MapDataProxy.Instance.Data;
-            LoadTerrain(setting);
+            OnUpdateTerrain(args, true);
+        }
 
-            InfoMap infos = EditorUtils.GetEventInfos(args);
-            MapCellFlag flag = (MapCellFlag)infos["flag"];
-            ToggleShowTerrain(flag, true);
+        private void OnUpdateTerrain(object[] args, bool showTerrain)
+        {
+            MapSetting setting = MapDataProxy.Instance.Data;
+            Dictionary<int, MapCellSetting> cellSettings = MapUtils.ArrayToDict(setting.Cells);
+            for (short j = 0; j < CellCountY; ++j)
+            {
+                for (short i = 0; i < CellCountX; ++i)
+                {
+                    short x = i;
+                    short y = (short)(j - i / 2);
+                    int key = MapUtils.MakeKey(x, y);
+
+                    MapCell cell = GetCell(x, y);
+                    cell.Flags = 0;
+
+                    MapCellSetting cellSetting;
+                    if (cellSettings.TryGetValue(key, out cellSetting))
+                    {
+                        cell.Flags = cellSetting.Flags;
+                    }
+                }
+            }
+
+            if (showTerrain)
+            {
+                InfoMap infos = EditorUtils.GetEventInfos(args);
+                MapCellFlag flag = (MapCellFlag)infos["flag"];
+                ToggleShowTerrain(flag, true);
+            }
+        }
+
+        private void OnLoadMap(object[] args)
+        {
+            OnUpdateTerrain(null, false);
+            OnUpdatePaths(null);
         }
     }
 }

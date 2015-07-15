@@ -15,8 +15,10 @@ namespace EditorK.UI
         public Text NameField;
         public Text FlagField;
         public Toggle VisibleField;
-
         public MapCellFlag Flag;
+
+        public delegate void VisibleChangeCallback(TerrainEntry entry);
+        public VisibleChangeCallback OnVisibleChange;
 
         public void Load(TerrainFlagInfo info)
         {
@@ -38,6 +40,12 @@ namespace EditorK.UI
             Color color = Color.white;
             color.a = 0.5f;
             Background.color = color;
+        }
+
+        public void OnVisibleFieldChange()
+        {
+            if (OnVisibleChange != null)
+                OnVisibleChange(this);
         }
     }
 }

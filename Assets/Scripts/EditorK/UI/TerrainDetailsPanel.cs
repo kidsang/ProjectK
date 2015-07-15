@@ -59,7 +59,7 @@ namespace EditorK.UI
             erasing = erase;
 
             Color white = Color.white;
-            Color blue = new Color(0, 0.6f, 1);
+            Color blue = EditorUtils.SelectedColor;
 
             FillButton.color = erasing ? white : blue;
             EraseButton.color = erasing ? blue : white;
@@ -68,6 +68,7 @@ namespace EditorK.UI
 
         public void OnSizeSliderValueChange()
         {
+            EditorConfig.Instance.TerrainBrushSize = (int)BrushSizeSlider.value;
             BrushSizeField.text = BrushSizeSlider.value.ToString();
             SetMouseData();
         }

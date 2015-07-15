@@ -38,7 +38,7 @@ namespace EditorK.UI
             }
 
             selectedTab = TabGroup.GetChild(index).gameObject.GetComponent<Image>();
-            selectedTab.color = new Color(0, 0.6f, 1);
+            selectedTab.color = EditorUtils.SelectedColor;
             selectedGroup = TabContentGroup.GetChild(index).gameObject;
             selectedGroup.SetActive(true);
         }

@@ -12,6 +12,7 @@ namespace EditorK
     {
         private Transform terrainRoot;
         private Dictionary<MapCellFlag, Transform> terrainRoots = new Dictionary<MapCellFlag, Transform>();
+        private Dictionary<MapCellFlag, int> terrainMaskIndices = new Dictionary<MapCellFlag, int>();
 
         public void New(MapSetting setting)
         {
@@ -144,16 +145,28 @@ namespace EditorK
             Transform root;
             if (show)
             {
+                int markIndex;
                 if (!terrainRoots.TryGetValue(flag, out root))
                 {
                     root = new GameObject("Terrain_" + Enum.GetName(typeof(MapCellFlag), flag)).transform;
                     root.SetParent(terrainRoot, false);
                     terrainRoots.Add(flag, root);
+
+                    List<int> indices = terrainMaskIndices.Values.ToList();
+                    for (markIndex = 0; ; ++markIndex)
+                    {
+                        if (indices.IndexOf(markIndex) < 0)
+                            break;
+                    }
+                    terrainMaskIndices[flag] = markIndex;
+                }
+                else
+                {
+                    markIndex = terrainMaskIndices[flag];
                 }
 
-                int rootIndex = root.GetSiblingIndex();
-                root.localPosition = new Vector3(0, 0, rootIndex * -0.1f);
-                float scale = 1 - rootIndex * 0.2f;
+                root.localPosition = new Vector3(0, 0, markIndex * -0.1f);
+                float scale = Mathf.Max(0.2f, 1 - markIndex * 0.2f);
 
                 Color color = TerrainFlagInfo.GetColorByFlag(flag);
                 List<MapCell> cells = GetCellsByFlag(flag);
@@ -188,6 +201,7 @@ namespace EditorK
                 {
                     Destroy(root.gameObject);
                     terrainRoots.Remove(flag);
+                    terrainMaskIndices.Remove(flag);
                 }
             }
         }
@@ -225,15 +239,26 @@ namespace EditorK
                 InfoMap infos = EditorUtils.GetEventInfos(args);
                 MapCellFlag flag = (MapCellFlag)infos["flag"];
                 ToggleShowTerrain(flag, true);
-
-                CalculatePaths();
-                ToggleShowPaths(true, true);
             }
+
+            CalculatePaths();
+            ToggleShowPaths(true, true);
         }
 
         private void OnLoadMap(object[] args)
         {
+            for (int i = 0; i < terrainRoot.childCount; ++i)
+                Destroy(terrainRoot.GetChild(i).gameObject);
+
             OnUpdateTerrain(null, false);
+
+            int terrainVisibleFlags = EditorConfig.Instance.TerrainVisibleFlags;
+            foreach (var info in TerrainFlagInfo.Infos)
+            {
+                if (EditorUtils.HasFlag(terrainVisibleFlags, (int)info.Flag))
+                    ToggleShowTerrain(info.Flag, true);
+            }
+
             OnUpdatePaths(null);
         }
     }

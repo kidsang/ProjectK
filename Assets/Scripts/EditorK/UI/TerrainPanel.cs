@@ -17,7 +17,6 @@ namespace EditorK.UI
 
         private TerrainEntry selectedEntry;
         private bool draging = false;
-        private int visibleFlags;
 
         public override void Awake()
         {
@@ -26,8 +25,7 @@ namespace EditorK.UI
             for (int i = Content.childCount - 1; i > 0; --i)
                 DestroyImmediate(Content.GetChild(i).gameObject);
 
-            TerrainFlagInfo[] infos = TerrainFlagInfo.Infos;
-            foreach (TerrainFlagInfo info in infos)
+            foreach (TerrainFlagInfo info in TerrainFlagInfo.Infos)
             {
                 GameObject entryObj = Instantiate(EntryPrefab) as GameObject;
                 entryObj.transform.SetParent(Content, false);
@@ -41,8 +39,16 @@ namespace EditorK.UI
 
         private void Start()
         {
-            visibleFlags = EditorConfig.Instance.TerrainVisibleFlags;
-            // TODO:
+            int visibleFlags = EditorConfig.Instance.TerrainVisibleFlags;
+            for (int i = 1; i < Content.childCount; ++i)
+            {
+                GameObject entryObj = Content.GetChild(i).gameObject;
+                TerrainEntry entry = entryObj.GetComponent<TerrainEntry>();
+
+                bool visible = EditorUtils.HasFlag(visibleFlags, (int)entry.Flag);
+                entry.VisibleField.isOn = visible;
+                entry.OnVisibleChange = OnTerrainEntryVisibleChange;
+            }
         }
 
         private void OnEnable()
@@ -71,12 +77,18 @@ namespace EditorK.UI
             InfoMap infos = new InfoMap();
             infos["index"] = index;
             DetailsPanels.Instance.ShowPanel(DetailsPanelType.Terrain, infos);
+
+            if (GameEditor.Instance.Map != null)
+                GameEditor.Instance.Map.ToggleShowTerrain(selectedEntry.Flag, true);
         }
 
         private void DeselectEntry()
         {
             if (!selectedEntry)
                 return;
+
+            if (!selectedEntry.VisibleField.isOn && GameEditor.Instance.Map != null)
+                GameEditor.Instance.Map.ToggleShowTerrain(selectedEntry.Flag, false);
 
             selectedEntry.Deselect();
             selectedEntry = null;
@@ -143,6 +155,28 @@ namespace EditorK.UI
             bool erase = (bool)infos["erase"];
 
             MapDataProxy.Instance.SetTerrainFlag(cell.X, cell.Y, size - 1, flag, !erase);
+        }
+
+        private void OnTerrainEntryVisibleChange(TerrainEntry entry)
+        {
+            MapCellFlag flag = entry.Flag;
+            bool visible = entry.VisibleField.isOn;
+            int visibleFlags = EditorConfig.Instance.TerrainVisibleFlags;
+            EditorUtils.SetFlag(ref visibleFlags, (int)flag, visible);
+            EditorConfig.Instance.TerrainVisibleFlags = visibleFlags;
+
+            if (entry != selectedEntry)
+                GameEditor.Instance.Map.ToggleShowTerrain(flag, visible);
+        }
+
+        public void OnToggleAllVisibleButtonClick()
+        {
+            bool visible = false;
+            for (int i = 1; i < Content.childCount; ++i)
+                visible = visible || !Content.GetChild(i).gameObject.GetComponent<TerrainEntry>().VisibleField.isOn;
+
+            for (int i = 1; i < Content.childCount; ++i)
+                Content.GetChild(i).gameObject.GetComponent<TerrainEntry>().VisibleField.isOn = visible;
         }
     }
 }

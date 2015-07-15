@@ -9,8 +9,8 @@ namespace ProjectK
     public enum MapCellFlag
     {
         None = 0,
-        CanBuild = 1,
-        CanWalk = 2,
+        CanWalk = 1,
+        CanBuild = 2,
     }
 
     /**

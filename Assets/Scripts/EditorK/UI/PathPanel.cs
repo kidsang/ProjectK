@@ -13,6 +13,7 @@ namespace EditorK.UI
     {
         public Transform Content;
         public GameObject EntryPrefab;
+        public Image AddPathButton;
 
         private bool initialized = false;
         private bool operating = false;
@@ -103,6 +104,7 @@ namespace EditorK.UI
         private void OperateMapPathStart(object data)
         {
             operating = true;
+            AddPathButton.color = EditorUtils.SelectedColor;
             EditorMouse mouse = EditorMouse.Instance;
             mouse.SetData(EditorMouseDataType.MapPathStart, data, "Map/StartMark");
         }
@@ -110,6 +112,7 @@ namespace EditorK.UI
         private void OperateMapPathEnd(object data)
         {
             operating = true;
+            AddPathButton.color = EditorUtils.SelectedColor;
             EditorMouse mouse = EditorMouse.Instance;
             mouse.SetData(EditorMouseDataType.MapPathEnd, data, "Map/EndMark");
         }
@@ -117,6 +120,7 @@ namespace EditorK.UI
         private void StopOperate()
         {
             operating = false;
+            AddPathButton.color = Color.white;
             EditorMouse mouse = EditorMouse.Instance;
             mouse.Clear();
         }

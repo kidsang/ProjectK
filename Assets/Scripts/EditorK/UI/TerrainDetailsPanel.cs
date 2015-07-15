@@ -28,13 +28,12 @@ namespace EditorK.UI
 
             BrushSizeSlider.value = EditorConfig.Instance.TerrainBrushSize;
             OnSizeSliderValueChange();
+            OnFillEraseButtonClick(false);
         }
 
         public override void OnEnable()
         {
             base.OnEnable();
-            OnFillEraseButtonClick(false);
-            OnSizeSliderValueChange();
             ready = true;
         }
 

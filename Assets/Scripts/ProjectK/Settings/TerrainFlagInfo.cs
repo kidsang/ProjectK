@@ -22,8 +22,8 @@ namespace ProjectK
         }
 
         public static TerrainFlagInfo[] Infos = {
-            new TerrainFlagInfo(MapCellFlag.CanBuild, "可建造", new Color(0.3f, 0.3f, 1)),
-            new TerrainFlagInfo(MapCellFlag.CanWalk, "可通过", new Color(0.3f, 1, 0.3f)),
+            new TerrainFlagInfo(MapCellFlag.CanBuild, "可建造", new Color(0.5f, 0.5f, 1)),
+            new TerrainFlagInfo(MapCellFlag.CanWalk, "可通过", new Color(0.5f, 1, 0.3f)),
                                                 };
 
         public static TerrainFlagInfo GetInfoByFlag(MapCellFlag flag)

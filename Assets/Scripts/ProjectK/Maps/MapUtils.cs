@@ -11,8 +11,8 @@ namespace ProjectK
         public static readonly float Radius = 1.0f;
         public static readonly float Sqrt3 = Mathf.Sqrt(3.0f);
         public static readonly Vector2[] Directions = {
-            new Vector2(1, -1), new Vector2(1, 0), new Vector2(0, 1),
-            new Vector2(-1, 1), new Vector2(-1, 0), new Vector2(0, -1)
+            new Vector2(1, 0), new Vector2(1, -1), new Vector2(0, -1),
+            new Vector2(-1, 0), new Vector2(-1, 1), new Vector2(0, 1)
                                                       };
         public static int MakeKey(short x, short y)
         {
@@ -109,13 +109,13 @@ namespace ProjectK
         {
             if (radius > 0)
             {
-                Vector2 current = Neighbour(x, y, 0, radius);
+                Vector2 current = Neighbour(x, y, 4, radius);
                 for (int i = 0; i < 6; ++i)
                 {
                     for (int j = 0; j < radius; ++j)
                     {
-                        current = Neighbour(current, i);
                         ret[index++] = current;
+                        current = Neighbour(current, i);
                     }
                 }
             }
@@ -138,12 +138,14 @@ namespace ProjectK
 
         public static Vector2[] Circle(int x, int y, int radius)
         {
-            int count = radius <= 0 ? 1 : (1 + radius) * radius / 2;
+            int count = 1;
+            for (int i = 1; i <= radius; ++i)
+                count += 6 * i;
             Vector2[] ret = new Vector2[count];
 
             int index = 0;
             for (int i = 0; i <= radius; ++i)
-                Ring(x, y, radius, ret, ref index);
+                Ring(x, y, i, ret, ref index);
 
             return ret;
         }

@@ -70,12 +70,12 @@ namespace ProjectK
 
         internal void BuildNeighbours()
         {
-            Neighbours[0] = Map.GetCell(X + 1, Y - 1);
-            Neighbours[1] = Map.GetCell(X + 1, Y);
-            Neighbours[2] = Map.GetCell(X, Y + 1);
-            Neighbours[3] = Map.GetCell(X - 1, Y + 1);
-            Neighbours[4] = Map.GetCell(X - 1, Y);
-            Neighbours[5] = Map.GetCell(X, Y - 1);
+            Neighbours[0] = Map.GetCell(X + 1, Y);
+            Neighbours[1] = Map.GetCell(X + 1, Y - 1);
+            Neighbours[2] = Map.GetCell(X, Y - 1);
+            Neighbours[3] = Map.GetCell(X - 1, Y);
+            Neighbours[4] = Map.GetCell(X - 1, Y + 1);
+            Neighbours[5] = Map.GetCell(X, Y + 1);
         }
 
         public Vector2 Location

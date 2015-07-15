@@ -222,7 +222,10 @@ namespace EditorK
                 //lastOverMapcell.ShowNeighbours(true);
 
                 if (preview != null)
+                {
                     preview.transform.position = lastOverMapcell.Position;
+                    preview.transform.Translate(0, 0, -10 - preview.transform.localPosition.z);
+                }
             }
 
             lastMousePosition = currentMousePosition;

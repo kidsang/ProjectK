@@ -10,11 +10,15 @@ namespace EditorK
 {
     public class EditorMap : Map
     {
+        private Transform terrainRoot;
         private Dictionary<MapCellFlag, Transform> terrainRoots = new Dictionary<MapCellFlag, Transform>();
 
         public void New(MapSetting setting)
         {
             Init(new ResourceLoader());
+            terrainRoot = new GameObject("TerrainRoot").transform;
+            terrainRoot.SetParent(MapRoot, false);
+
             //Load(setting);
             ResizeMap(setting.CellCountX, setting.CellCountY);
 
@@ -143,9 +147,13 @@ namespace EditorK
                 if (!terrainRoots.TryGetValue(flag, out root))
                 {
                     root = new GameObject("Terrain_" + Enum.GetName(typeof(MapCellFlag), flag)).transform;
-                    root.SetParent(MapRoot, false);
+                    root.SetParent(terrainRoot, false);
                     terrainRoots.Add(flag, root);
                 }
+
+                int rootIndex = root.GetSiblingIndex();
+                root.localPosition = new Vector3(0, 0, rootIndex * -0.1f);
+                float scale = 1 - rootIndex * 0.2f;
 
                 Color color = TerrainFlagInfo.GetColorByFlag(flag);
                 List<MapCell> cells = GetCellsByFlag(flag);
@@ -167,6 +175,8 @@ namespace EditorK
                         terrainMark = root.GetChild(i);
                     }
                     terrainMark.position = cell.Position;
+                    terrainMark.Translate(0, 0, -terrainMark.localPosition.z);
+                    terrainMark.localScale = new Vector3(scale, scale);
                 }
 
                 for (int i = cellCount; i < childCount; ++i)
@@ -215,6 +225,9 @@ namespace EditorK
                 InfoMap infos = EditorUtils.GetEventInfos(args);
                 MapCellFlag flag = (MapCellFlag)infos["flag"];
                 ToggleShowTerrain(flag, true);
+
+                CalculatePaths();
+                ToggleShowPaths(true, true);
             }
         }
 

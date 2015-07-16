@@ -12,7 +12,6 @@ namespace EditorK.UI
     {
         public GameObject FillMarkPrefab;
 
-        public Text NameField;
         public Image FillButton;
         public Image EraseButton;
         public Text BrushSizeField;
@@ -48,9 +47,7 @@ namespace EditorK.UI
         {
             base.Refresh(infos);
             int index = (int)infos["index"];
-
             info = TerrainFlagInfo.Infos[index];
-            NameField.text = info.Name;
             SetMouseData();
         }
 

@@ -9,9 +9,10 @@ namespace ProjectK
     public class EntitySetting : TabFileObject
     {
         public int ID;
-        public EntityType Type;
+        public string Name;
         public float Width;
         public float Height;
+        public string Prefab;
 
         public override string GetKey()
         {

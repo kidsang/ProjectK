@@ -7,24 +7,32 @@ using ProjectK.Base;
 
 namespace ProjectK
 {
+    public enum EntityType
+    {
+        Invalid = 0,
+        Hero,
+        Turret,
+        Bullet,
+    }
+
     public class SceneEntity : DisposableBehaviour
     {
-        private ResourceLoader loader;
-        private int templateID;
-        private EntitySetting template;
+        public ResourceLoader Loader { get; private set; }
+        public EntitySetting Template { get; private set; }
+        public int TemplateID { get; private set; }
+        public EntityType Type { get; protected set; }
 
-        internal void Init(ResourceLoader loader, int templateID)
+        internal virtual void Init(ResourceLoader loader, EntitySetting template)
         {
-            this.loader = loader;
-            this.templateID = templateID;
-            template = SettingManager.Instance.EntitySettings.GetValue(templateID);
-            Log.Assert(template != null, "找不到场景物件定义！ ID:", templateID);
+            Loader = loader;
+            Template = template;
+            TemplateID = template.ID;
 
             Rigidbody2D body = gameObject.AddComponent<Rigidbody2D>();
             body.isKinematic = true;
 
             BoxCollider2D collider = gameObject.AddComponent<BoxCollider2D>();
-            collider.size = new Vector2(template.Width, template.Height);
+            collider.size = new Vector2(Template.Width, Template.Height);
             collider.isTrigger = true;
         }
 

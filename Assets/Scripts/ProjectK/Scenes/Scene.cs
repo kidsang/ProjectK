@@ -24,8 +24,8 @@ namespace ProjectK
             map.Init(loader);
 
             // todo test:
-            //map.ResizeMap(4, 3);
-            //SceneEntityManager.Create(loader, 1);
+            //map.ResizeMap(4, 4);
+            SceneEntityManager.Create<HeroEntity>(loader, 0);
         }
 
         protected override void OnDispose()

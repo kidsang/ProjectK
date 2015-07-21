@@ -17,7 +17,7 @@ namespace ProjectK
         public delegate void AllCompleteCallback();
         private AllCompleteCallback allComplete;
 
-        public TabFile<EntitySetting> EntitySettings;
+        public TabFile<HeroEntitySetting> HeroEntitySettings;
 
         public static void Init(AllCompleteCallback allComplete)
         {
@@ -32,19 +32,19 @@ namespace ProjectK
 
         private void LoadAll()
         {
-            LoadTabFile<EntitySetting>("Settings/SceneEntities.tab", out EntitySettings);
+            HeroEntitySettings = LoadTabFile<HeroEntitySetting>("Settings/HeroEntities.tab");
         }
 
-        private void LoadIniFile(string url, out IniFile res)
+        private IniFile LoadIniFile(string url)
         {
             ++loadingCount;
-            res = loader.LoadIniFileAsync(url, OnLoadComplete);
+            return loader.LoadIniFileAsync(url, OnLoadComplete);
         }
 
-        private void LoadTabFile<T>(string url, out TabFile<T> res) where T: TabFileObject, new()
+        private TabFile<T> LoadTabFile<T>(string url) where T: TabFileObject, new()
         {
             ++loadingCount;
-            res = loader.LoadTabFileAsync<T>(url, OnLoadComplete);
+            return loader.LoadTabFileAsync<T>(url, OnLoadComplete);
         }
 
         private void OnLoadComplete(Resource res)

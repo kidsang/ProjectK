@@ -5,9 +5,7 @@ using System.Text;
 
 namespace ProjectK
 {
-    public enum EntityType
+    public class HeroEntitySetting : EntitySetting
     {
-        etInvalid = 0,
-        etBullet,
     }
 }

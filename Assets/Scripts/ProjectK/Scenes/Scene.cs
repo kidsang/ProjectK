@@ -28,7 +28,6 @@ namespace ProjectK
             Map.Init(loader);
 
             SpawnManager = new SpawnManager();
-            SpawnManager.Init(this);
         }
 
         protected override void OnDispose()
@@ -48,7 +47,7 @@ namespace ProjectK
         public void LoadMap(SceneSetting setting)
         {
             Map.Load(setting.Map);
-            SpawnManager.Load(setting.Spawns);
+            SpawnManager.Load(setting.Spawn);
         }
 
         public void StartScene()
@@ -59,7 +58,12 @@ namespace ProjectK
         private void FixedUpdate()
         {
             float time = Time.fixedTime - startTime;
-            SpawnManager.Activate(time);
+            SpawnManager.Activate(this, time);
+        }
+
+        public void Spawn(int x, int y, int heroID, int count)
+        {
+
         }
     }
 }

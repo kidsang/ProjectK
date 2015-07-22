@@ -8,10 +8,16 @@ namespace ProjectK
     public class SceneSetting
     {
         public MapSetting Map;
-        public SpawnSetting[] Spawns;
+        public SpawnSetting Spawn;
     }
 
     public class SpawnSetting
+    {
+        public SpawnLocationSetting[] Locations;
+        public float WaveIntervalTime; // 波次间刷怪间隔，单位秒
+    }
+
+    public class SpawnLocationSetting
     {
         public int X;
         public int Y;

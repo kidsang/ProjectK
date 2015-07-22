@@ -37,11 +37,17 @@ namespace EditorK
                 throw new Exception("多个GameEditor实例！");
 
             sceneRoot = gameObject;
-            ResourceManager.Init();
             EditorConfig.Init();
+
+            ResourceManager.Init();
+            SettingManager.Init(StartEditor);
         }
 
         void Start()
+        {
+        }
+
+        private void StartEditor()
         {
             NewMap();
         }

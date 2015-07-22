@@ -51,9 +51,14 @@ namespace ProjectK
             this.Z = (short)(-x - y);
             this.Key = MapUtils.MakeKey(x, y);
 
-            CellObject.transform.position = new Vector3(CenterX, CenterY);
+            CellObject.transform.localPosition = new Vector3(CenterX, CenterY);
 
             Neighbours = new MapCell[NumNeighbours];
+        }
+
+        internal void Load(MapCellSetting setting)
+        {
+            Flags = setting.Flags;
         }
 
         protected override void OnDispose()

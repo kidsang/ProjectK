@@ -11,8 +11,8 @@ namespace ProjectK
         public int CellCountX;
         public int CellCountY;
 
-        public MapPathSetting[] Paths = new MapPathSetting[0];
-        public MapCellSetting[] Cells = new MapCellSetting[0];
+        public MapPathSetting[] Paths;
+        public MapCellSetting[] Cells;
     }
 
     public class MapPathSetting
@@ -32,5 +32,4 @@ namespace ProjectK
         public int Y;
         public int Flags;
     }
-
 }

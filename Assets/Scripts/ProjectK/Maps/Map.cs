@@ -84,11 +84,28 @@ namespace ProjectK
             CellCountY = setting.CellCountY;
             UpdateMapSize();
 
-            // TODO
             // Load map cells
             Cells = new Dictionary<int, MapCell>();
-
+            foreach (MapCellSetting cellSetting in setting.Cells)
+            {
+                GameObject cellObject = Loader.LoadPrefab("Map/MapCell").Instantiate();
+                cellObject.transform.SetParent(CellRoot, false);
+                MapCell cell = cellObject.AddComponent<MapCell>();
+                cell.Init(this, (short)cellSetting.X, (short)cellSetting.Y);
+                cell.Load(cellSetting);
+                Cells.Add(cell.Key, cell);
+            }
             BuildNeighbours();
+
+            // Load paths
+            foreach (MapPathSetting pathSetting in setting.Paths)
+            {
+                AddPath(new Vector2(pathSetting.StartX, pathSetting.StartY),
+                        new Vector2(pathSetting.EndX, pathSetting.EndY),
+                        new Color(pathSetting.ColorR, pathSetting.ColorG, pathSetting.ColorB));
+            }
+            CalculatePaths();
+            ToggleShowPaths(true);
         }
 
         protected void UpdateMapSize()

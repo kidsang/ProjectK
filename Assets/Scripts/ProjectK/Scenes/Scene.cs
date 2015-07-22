@@ -11,27 +11,30 @@ namespace ProjectK
     {
         private GameObject sceneRoot;
         private ResourceLoader loader;
-        private Map map;
+        public Map Map { get; private set; }
+        public SpawnManager SpawnManager { get; private set; }
 
-        internal void Init()
+        private float startTime;
+
+        public void Init()
         {
             sceneRoot = gameObject;
             loader = new ResourceLoader();
 
             GameObject mapRoot = new GameObject("MapRoot");
             mapRoot.transform.SetParent(sceneRoot.transform, false);
-            map = mapRoot.AddComponent<Map>();
-            map.Init(loader);
 
-            // todo test:
-            //map.ResizeMap(4, 4);
-            SceneEntityManager.Create<HeroEntity>(loader, 0);
+            Map = mapRoot.AddComponent<Map>();
+            Map.Init(loader);
+
+            SpawnManager = new SpawnManager();
+            SpawnManager.Init(this);
         }
 
         protected override void OnDispose()
         {
-            map.Dispose();
-            map = null;
+            Map.Dispose();
+            Map = null;
 
             loader.Dispose();
             loader = null;
@@ -40,6 +43,23 @@ namespace ProjectK
             sceneRoot = null;
 
             base.OnDispose();
+        }
+
+        public void LoadMap(SceneSetting setting)
+        {
+            Map.Load(setting.Map);
+            SpawnManager.Load(setting.Spawns);
+        }
+
+        public void StartScene()
+        {
+            startTime = Time.fixedTime;
+        }
+
+        private void FixedUpdate()
+        {
+            float time = Time.fixedTime - startTime;
+            SpawnManager.Activate(time);
         }
     }
 }

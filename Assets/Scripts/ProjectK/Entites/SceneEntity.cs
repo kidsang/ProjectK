@@ -36,7 +36,7 @@ namespace ProjectK
             collider.isTrigger = true;
         }
 
-        public virtual void Activate(Scene scene, float time)
+        public virtual void Activate(Scene scene)
         {
 
         }

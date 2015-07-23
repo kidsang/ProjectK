@@ -16,6 +16,9 @@ namespace ProjectK
         public SpawnManager SpawnManager { get; private set; }
 
         private float startTime;
+        public float Time { get; private set; }
+        public float DeltaTime { get; private set; }
+
         private List<HeroEntity> monsters = new List<HeroEntity>();
 
 
@@ -71,25 +74,41 @@ namespace ProjectK
 
         public void StartScene()
         {
-            startTime = Time.fixedTime;
+            startTime = UnityEngine.Time.fixedTime;
         }
 
         private void FixedUpdate()
         {
-            float time = Time.fixedTime - startTime;
-            SpawnManager.Activate(this, time);
+            Time = UnityEngine.Time.fixedTime - startTime;
+            DeltaTime = UnityEngine.Time.fixedDeltaTime;
+
+            SpawnManager.Activate(this, Time);
 
             foreach (var monster in monsters)
-                monster.Activate(this, time);
+                monster.Activate(this);
         }
 
         public void CreateHero(int x, int y, int heroID, int count)
         {
+            Vector2 start = new Vector2();
+            Vector2 end = new Vector2();
+            for (int i = 0; i < Map.StartLocations.Count; i++)
+            {
+                Vector2 location = Map.StartLocations[i];
+                if (location.x == x && location.y == y)
+                {
+                    start = location;
+                    end = Map.EndLocations[i];
+                    break;
+                }
+            }
+
             for (int i = 0; i < count; ++i)
             {
                 HeroEntity hero = SceneEntityManager.Create<HeroEntity>(loader, heroID);
                 hero.gameObject.transform.SetParent(sceneRoot.transform);
                 hero.gameObject.transform.position = MapUtils.LocationToPosition(x, y);
+                hero.SetStartEnd(start, end);
                 monsters.Add(hero);
             }
         }

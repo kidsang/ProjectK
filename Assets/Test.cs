@@ -16,7 +16,7 @@ namespace ProjectK
             //Time.timeScale = 0;
         }
 
-        private float lastTime;
+        //private float lastTime;
         void Update()
         {
             //Log.Info("Time:", Time.time);
@@ -27,7 +27,7 @@ namespace ProjectK
             //}
         }
 
-        private float lastFixedTime;
+        //private float lastFixedTime;
         void FixedUpdate()
         {
             //Log.Info("FixedTime:", Time.fixedTime);

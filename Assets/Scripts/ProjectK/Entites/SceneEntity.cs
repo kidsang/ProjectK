@@ -22,7 +22,7 @@ namespace ProjectK
         public int TemplateID { get; private set; }
         public EntityType Type { get; protected set; }
 
-        internal virtual void Init(ResourceLoader loader, EntitySetting template)
+        public virtual void Init(ResourceLoader loader, EntitySetting template)
         {
             Loader = loader;
             Template = template;
@@ -36,5 +36,9 @@ namespace ProjectK
             collider.isTrigger = true;
         }
 
+        public virtual void Activate(Scene scene, float time)
+        {
+
+        }
     }
 }

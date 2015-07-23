@@ -153,7 +153,7 @@ namespace ProjectK
                 if (time < nextTime)
                     return false;
 
-                scene.Spawn(X, Y, HeroID, SpawnPerTime);
+                scene.CreateHero(X, Y, HeroID, SpawnPerTime);
                 nextTime = time + IntervalTime;
                 remainTimes -= 1;
 

@@ -56,6 +56,41 @@ namespace ProjectK
             return PositionToLocation(position.x, position.y);
         }
 
+        public static bool InLine(Vector2 p, Vector2 p1, Vector2 p2)
+        {
+            return (p2.x - p1.x) * (p.y - p1.y) == (p2.y - p1.y) * (p.x - p1.x);
+        }
+
+        public static bool InSegment(Vector2 p, Vector2 p1, Vector2 p2)
+        {
+            if (!InLine(p, p1, p2))
+                return false;
+
+            if (p1.x < p2.x)
+            {
+                if (p.x < p1.x || p.x > p2.x)
+                    return false;
+            }
+            else
+            {
+                if (p.x > p1.x || p.x < p2.x)
+                    return false;
+            }
+
+            if (p1.y < p2.y)
+            {
+                if (p.y < p1.y || p.y > p2.y)
+                    return false;
+            }
+            else
+            {
+                if (p.y > p1.y || p.y < p2.y)
+                    return false;
+            }
+
+            return true;
+        }
+
         public static int Distance(int x1, int y1, int x2, int y2)
         {
             int z1 = -x1 - y1;

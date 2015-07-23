@@ -255,7 +255,7 @@ namespace ProjectK
                 Vector2 p1 = path[i + 1];
                 Vector2 p2 = path[i];
                 Vector2 p3 = path[i - 1];
-                if ((p3.x - p1.x) * (p2.y - p1.y) == (p3.y - p1.y) * (p2.x - p1.x))
+                if (MapUtils.InLine(p2, p1, p3))
                     path.RemoveAt(i);
             }
 

@@ -30,8 +30,8 @@ namespace ProjectK
             SettingManager settings = SettingManager.Instance;
 
             EntitySetting setting;
-            if (type == typeof(HeroEntity))
-                setting = settings.HeroEntitySettings.GetValue(templateID);
+            if (type == typeof(MonsterEntity))
+                setting = settings.MonsterEntitySettings.GetValue(templateID);
             else
                 setting = null;
 

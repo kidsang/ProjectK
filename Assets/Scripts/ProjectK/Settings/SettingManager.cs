@@ -17,7 +17,7 @@ namespace ProjectK
         public delegate void AllCompleteCallback();
         private AllCompleteCallback allComplete;
 
-        public TabFile<HeroEntitySetting> HeroEntitySettings;
+        public TabFile<MonsterEntitySetting> MonsterEntitySettings;
 
         public static void Init(AllCompleteCallback allComplete)
         {
@@ -32,7 +32,7 @@ namespace ProjectK
 
         private void LoadAll()
         {
-            HeroEntitySettings = LoadTabFile<HeroEntitySetting>("Settings/HeroEntities.tab");
+            MonsterEntitySettings = LoadTabFile<MonsterEntitySetting>("Settings/MonsterEntities.tab");
         }
 
         private IniFile LoadIniFile(string url)

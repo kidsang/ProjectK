@@ -1,0 +1,3 @@
+ID	Name	Width	Height	Prefab	MoveSpeed
+#		碰撞体x轴长	碰撞体y轴高	Prefab路径	移动速度，米每秒
+0	测试用怪物	2	2	Monster/Test	2

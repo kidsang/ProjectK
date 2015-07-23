@@ -10,7 +10,7 @@ namespace ProjectK
     public enum EntityType
     {
         Invalid = 0,
-        Hero,
+        Monster,
         Turret,
         Bullet,
     }

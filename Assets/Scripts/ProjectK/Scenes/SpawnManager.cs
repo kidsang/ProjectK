@@ -19,6 +19,9 @@ namespace ProjectK
 
         public void Load(SpawnSetting setting)
         {
+            if (setting == null)
+                return;
+
             waveIntervalTime = setting.WaveIntervalTime;
 
             Dictionary<int, SpawnWave> waveDict = new Dictionary<int, SpawnWave>();
@@ -43,7 +46,7 @@ namespace ProjectK
                     entry.IntervalTime = waveSetting.IntervalTime;
                     entry.SpawnTimes = waveSetting.SpawnTimes;
                     entry.SpawnPerTime = waveSetting.SpawnPerTime;
-                    entry.HeroID = waveSetting.HeroID;
+                    entry.TemplateID = waveSetting.TemplateID;
                     wave.Entries.Add(entry);
                 }
             }
@@ -63,15 +66,12 @@ namespace ProjectK
             currentWave = null;
 
             if (WaveCount <= 0)
-            {
                 NextWaveIndex = 0;
-                nextWave = null;
-            }
             else if (waveIndex >= WaveCount)
-            {
                 NextWaveIndex = WaveCount - 1;
+
+            if (waveIndex < WaveCount)
                 nextWave = waves[NextWaveIndex];
-            }
         }
 
         public void Activate(Scene scene, float time)
@@ -91,6 +91,10 @@ namespace ProjectK
                 {
                     nextWave = waves[NextWaveIndex];
                     NextWaveStartTime = time + waveIntervalTime;
+                }
+                else
+                {
+                    nextWave = null;
                 }
             }
         }
@@ -133,7 +137,7 @@ namespace ProjectK
             public float IntervalTime;
             public int SpawnTimes;
             public int SpawnPerTime;
-            public int HeroID;
+            public int TemplateID;
 
             private float nextTime;
             private int remainTimes;
@@ -153,7 +157,7 @@ namespace ProjectK
                 if (time < nextTime)
                     return false;
 
-                scene.CreateHero(X, Y, HeroID, SpawnPerTime);
+                scene.CreateMonster(X, Y, TemplateID, SpawnPerTime);
                 nextTime = time + IntervalTime;
                 remainTimes -= 1;
 

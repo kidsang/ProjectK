@@ -15,11 +15,12 @@ namespace ProjectK
         public Map Map { get; private set; }
         public SpawnManager SpawnManager { get; private set; }
 
+        public bool Playing { get; private set; }
         private float startTime;
         public float Time { get; private set; }
         public float DeltaTime { get; private set; }
 
-        private List<HeroEntity> monsters = new List<HeroEntity>();
+        private List<MonsterEntity> monsters = new List<MonsterEntity>();
 
 
         public void Init()
@@ -66,19 +67,31 @@ namespace ProjectK
             base.OnDispose();
         }
 
-        public void LoadMap(SceneSetting setting)
+        public void Load(SceneSetting setting)
         {
             Map.Load(setting.Map);
             SpawnManager.Load(setting.Spawn);
         }
 
+        public void Load(string url)
+        {
+            SceneSetting setting = loader.Load<JsonFile<SceneSetting>>(url).Data;
+            Load(setting);
+        }
+
         public void StartScene()
         {
+            Playing = true;
             startTime = UnityEngine.Time.fixedTime;
+
+            SpawnManager.Start();
         }
 
         private void FixedUpdate()
         {
+            if (!Playing)
+                return;
+
             Time = UnityEngine.Time.fixedTime - startTime;
             DeltaTime = UnityEngine.Time.fixedDeltaTime;
 
@@ -88,7 +101,7 @@ namespace ProjectK
                 monster.Activate(this);
         }
 
-        public void CreateHero(int x, int y, int heroID, int count)
+        public void CreateMonster(int x, int y, int templateID, int count)
         {
             Vector2 start = new Vector2();
             Vector2 end = new Vector2();
@@ -105,11 +118,11 @@ namespace ProjectK
 
             for (int i = 0; i < count; ++i)
             {
-                HeroEntity hero = SceneEntityManager.Create<HeroEntity>(loader, heroID);
-                hero.gameObject.transform.SetParent(sceneRoot.transform);
-                hero.gameObject.transform.position = MapUtils.LocationToPosition(x, y);
-                hero.SetStartEnd(start, end);
-                monsters.Add(hero);
+                MonsterEntity monster = SceneEntityManager.Create<MonsterEntity>(loader, templateID);
+                monster.gameObject.transform.SetParent(sceneRoot.transform);
+                monster.gameObject.transform.position = MapUtils.LocationToPosition(x, y);
+                monster.SetStartEnd(start, end);
+                monsters.Add(monster);
             }
         }
     }

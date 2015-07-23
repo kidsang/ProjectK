@@ -5,7 +5,8 @@ using System.Text;
 
 namespace ProjectK
 {
-    public class HeroEntitySetting : EntitySetting
+    public class MonsterEntitySetting : EntitySetting
     {
+        public float MoveSpeed;
     }
 }

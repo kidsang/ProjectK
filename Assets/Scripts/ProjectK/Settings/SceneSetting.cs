@@ -34,6 +34,6 @@ namespace ProjectK
         public float IntervalTime; // 波次内刷怪间隔，单位秒
         public int SpawnTimes; // 波次内刷怪次数
         public int SpawnPerTime; // 每次刷怪数量。 该波次刷怪总数 = SpawnTimes * SpawnPerTime
-        public int HeroID; // 怪物模板ID
+        public int TemplateID; // 怪物模板ID
     }
 }

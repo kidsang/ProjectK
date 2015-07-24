@@ -27,9 +27,10 @@ namespace EditorK.UI
             this.operateStart = operateStart;
             this.operateEnd = operateEnd;
 
-            ColorField.color = new Color(data.ColorR, data.ColorG, data.ColorB);
-            StartField.text = "起点：(" + data.StartX + ", " + data.StartY + ")";
-            EndField.text = "终点：(" + data.EndX + ", " + data.EndY + ")";
+            // TODO:
+            //ColorField.color = new Color(data.ColorR, data.ColorG, data.ColorB);
+            //StartField.text = "起点：(" + data.StartX + ", " + data.StartY + ")";
+            //EndField.text = "终点：(" + data.EndX + ", " + data.EndY + ")";
         }
 
         public void onChangeStart()

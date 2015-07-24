@@ -101,27 +101,15 @@ namespace ProjectK
                 monster.Activate(this);
         }
 
-        public void CreateMonster(int x, int y, int templateID, int count)
+        public void CreateMonster(int pathIndex, int templateID, int count)
         {
-            Vector2 start = new Vector2();
-            Vector2 end = new Vector2();
-            for (int i = 0; i < Map.StartLocations.Count; i++)
-            {
-                Vector2 location = Map.StartLocations[i];
-                if (location.x == x && location.y == y)
-                {
-                    start = location;
-                    end = Map.EndLocations[i];
-                    break;
-                }
-            }
-
+            MapPath path = Map.Paths[pathIndex];
             for (int i = 0; i < count; ++i)
             {
                 MonsterEntity monster = SceneEntityManager.Create<MonsterEntity>(loader, templateID);
                 monster.gameObject.transform.SetParent(sceneRoot.transform);
-                monster.gameObject.transform.position = MapUtils.LocationToPosition(x, y);
-                monster.SetStartEnd(start, end);
+                monster.gameObject.transform.position = path.StartPosition;
+                monster.SetPath(path);
                 monsters.Add(monster);
             }
         }

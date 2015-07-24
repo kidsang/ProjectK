@@ -17,13 +17,16 @@ namespace ProjectK
 
     public class MapPathSetting
     {
-        public int StartX;
-        public int StartY;
-        public int EndX;
-        public int EndY;
         public float ColorR;
         public float ColorG;
         public float ColorB;
+        public MapWaypointSetting[] Waypoints;
+    }
+
+    public class MapWaypointSetting
+    {
+        public int X;
+        public int Y;
     }
 
     public class MapCellSetting

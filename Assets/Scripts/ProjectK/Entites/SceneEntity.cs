@@ -40,5 +40,10 @@ namespace ProjectK
         {
 
         }
+
+        public Vector2 Location
+        {
+            get { return MapUtils.PositionToLocation(gameObject.transform.position); }
+        }
     }
 }

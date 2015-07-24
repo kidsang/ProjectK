@@ -47,19 +47,20 @@ namespace EditorK
 
         public void AddPath(int startX, int startY, int endX, int endY)
         {
-            List<MapPathSetting> paths = new List<MapPathSetting>(Data.Paths);
-            MapPathSetting path = new MapPathSetting();
-            path.StartX = startX;
-            path.StartY = startY;
-            path.EndX = endX;
-            path.EndY = endY;
-            path.ColorR = Random.value;
-            path.ColorG = Random.value;
-            path.ColorB = Random.value;
-            paths.Add(path);
-            Data.Paths = paths.ToArray();
+            // TODO:
+            //List<MapPathSetting> paths = new List<MapPathSetting>(Data.Paths);
+            //MapPathSetting path = new MapPathSetting();
+            //path.StartX = startX;
+            //path.StartY = startY;
+            //path.EndX = endX;
+            //path.EndY = endY;
+            //path.ColorR = Random.value;
+            //path.ColorG = Random.value;
+            //path.ColorB = Random.value;
+            //paths.Add(path);
+            //Data.Paths = paths.ToArray();
 
-            Modify(EditorEvent.MAP_UPDATE_PATHS, null);
+            //Modify(EditorEvent.MAP_UPDATE_PATHS, null);
         }
 
         public void RemovePath(int index)
@@ -84,24 +85,26 @@ namespace EditorK
 
         public void SetPathStart(int index, int startX, int startY)
         {
-            MapPathSetting path = Data.Paths[index];
-            path.StartX = startX;
-            path.StartY = startY;
+            // TODO:
+            //MapPathSetting path = Data.Paths[index];
+            //path.StartX = startX;
+            //path.StartY = startY;
 
-            InfoMap infos = new InfoMap();
-            infos["index"] = index;
-            Modify(EditorEvent.MAP_UPDATE_PATH, infos);
+            //InfoMap infos = new InfoMap();
+            //infos["index"] = index;
+            //Modify(EditorEvent.MAP_UPDATE_PATH, infos);
         }
 
         public void SetPathEnd(int index, int endX, int endY)
         {
-            MapPathSetting path = Data.Paths[index];
-            path.EndX = endX;
-            path.EndY = endY;
+            // TODO:
+            //MapPathSetting path = Data.Paths[index];
+            //path.EndX = endX;
+            //path.EndY = endY;
 
-            InfoMap infos = new InfoMap();
-            infos["index"] = index;
-            Modify(EditorEvent.MAP_UPDATE_PATH, infos);
+            //InfoMap infos = new InfoMap();
+            //infos["index"] = index;
+            //Modify(EditorEvent.MAP_UPDATE_PATH, infos);
         }
 
         public void SetPathColor(int index, float colorR, float colorG, float colorB)

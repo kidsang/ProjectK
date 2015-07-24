@@ -26,11 +26,9 @@ namespace ProjectK
         public int CellCountY { get; protected set; }
 
         public Dictionary<int, MapCell> Cells { get; protected set; }
-        public List<Vector2> StartLocations { get; protected set; }
-        public List<Vector2> EndLocations { get; protected set; }
         public List<Color> PathColors { get; protected set; }
-        public List<List<Vector2>> Paths { get; protected set; }
         public List<GameObject> PathObjectRoots { get; protected set; }
+        public List<MapPath> Paths { get; protected set; }
         protected PriorityQueue<MapCell> frontier = new PriorityQueue<MapCell>(); // 用于寻路
 
         internal void Init(ResourceLoader loader)
@@ -43,11 +41,9 @@ namespace ProjectK
 
             Loader = loader;
             Cells = new Dictionary<int, MapCell>();
-            StartLocations = new List<Vector2>();
-            EndLocations = new List<Vector2>();
             PathColors = new List<Color>();
-            Paths = new List<List<Vector2>>();
             PathObjectRoots = new List<GameObject>();
+            Paths = new List<MapPath>();
         }
 
         protected override void OnDispose()
@@ -59,8 +55,6 @@ namespace ProjectK
                 Cells = null;
             }
 
-            StartLocations = null;
-            EndLocations = null;
             PathColors = null;
             Paths = null;
             MapRoot = null;
@@ -100,9 +94,10 @@ namespace ProjectK
             // Load paths
             foreach (MapPathSetting pathSetting in setting.Paths)
             {
-                AddPath(new Vector2(pathSetting.StartX, pathSetting.StartY),
-                        new Vector2(pathSetting.EndX, pathSetting.EndY),
-                        new Color(pathSetting.ColorR, pathSetting.ColorG, pathSetting.ColorB));
+                List<Vector2> locations = new List<Vector2>(pathSetting.Waypoints.Length);
+                foreach (var point in pathSetting.Waypoints)
+                    locations.Add(new Vector2(point.X, point.Y));
+                AddPath(locations, new Color(pathSetting.ColorR, pathSetting.ColorG, pathSetting.ColorB));
             }
             CalculatePaths();
             ToggleShowPaths(true);
@@ -164,19 +159,19 @@ namespace ProjectK
             return GetDistance(cell1.X, cell1.Y, cell2.X, cell2.Y);
         }
 
-        public void AddPath(Vector2 startLocation, Vector2 endLocation, Color color)
+        public void AddPath(List<Vector2> locations, Color color)
         {
-            StartLocations.Add(startLocation);
-            EndLocations.Add(endLocation);
+            MapPath path = new MapPath();
+            path.Init(this);
+            path.AddWaypoints(locations);
+            Paths.Add(path);
+
             PathColors.Add(color);
-            Paths.Add(new List<Vector2>());
             PathObjectRoots.Add(null);
         }
 
         public void RemovePath(int index)
         {
-            StartLocations.RemoveAt(index);
-            EndLocations.RemoveAt(index);
             PathColors.RemoveAt(index);
             Paths.RemoveAt(index);
 
@@ -185,12 +180,11 @@ namespace ProjectK
             PathObjectRoots.RemoveAt(index);
         }
 
-        public void UpdatePath(int index, Vector2 startLocation, Vector2 endLocation, Color color)
+        public void UpdatePath(int index, List<Vector2> locations, Color color)
         {
-            StartLocations[index] = startLocation;
-            EndLocations[index] = endLocation;
             PathColors[index] = color;
-            Paths[index].Clear();
+            Paths[index].ClearWaypoints();
+            Paths[index].AddWaypoints(locations);
 
             if (PathObjectRoots[index] != null)
                 Destroy(PathObjectRoots[index]);
@@ -264,7 +258,8 @@ namespace ProjectK
 
         public void CalculatePath(int index)
         {
-            CalculatePath(StartLocations[index], EndLocations[index], Paths[index]);
+            MapPath path = Paths[index];
+            path.RecalculatePaths();
         }
 
         public void CalculatePaths()
@@ -286,6 +281,7 @@ namespace ProjectK
             if (show && pathObjectRoot == null)
             {
                 Color color = PathColors[index];
+                MapPath path = Paths[index];
 
                 pathObjectRoot = new GameObject("PathObjectRoot");
                 pathObjectRoot.transform.SetParent(PathRoot.transform, false);
@@ -293,28 +289,34 @@ namespace ProjectK
 
                 GameObject obj = Loader.LoadPrefab("Map/StartMark").Instantiate();
                 obj.transform.SetParent(pathObjectRoot.transform, false);
-                obj.transform.position = GetCell(StartLocations[index]).Position;
+                obj.transform.position = path.StartPosition;
                 obj.GetComponent<SpriteRenderer>().color = color;
 
                 obj = Loader.LoadPrefab("Map/EndMark").Instantiate();
                 obj.transform.SetParent(pathObjectRoot.transform, false);
-                obj.transform.position = GetCell(EndLocations[index]).Position;
+                obj.transform.position = path.EndPosition;
                 obj.GetComponent<SpriteRenderer>().color = color;
 
-                List<Vector2> path = Paths[index];
-                int count = path.Count;
-                if (count > 0)
+                int count = path.WaypointCount;
+                for (int i = 1; i < count; ++i)
                 {
-                    Vector3[] points = new Vector3[count];
-                    for (int i = 0; i < count; ++i)
-                        points[i] = GetCell(path[i]).Position;
-                    VectorLine line = new VectorLine("PathLine", points, null, 2, LineType.Continuous);
+                    List<Vector3> positions = path.FindPathPosition(i);
+                    VectorLine line = new VectorLine("PathLine", positions, null, 2, LineType.Continuous);
                     line.color = color;
 
                     obj = new GameObject("PathLine");
                     obj.transform.SetParent(pathObjectRoot.transform, false);
                     VectorManager.useDraw3D = true;
                     VectorManager.ObjectSetup(obj, line, Visibility.Dynamic, Brightness.None);
+
+                    if (i < count - 1)
+                    {
+                        obj = Loader.LoadPrefab("Map/StartMark").Instantiate();
+                        obj.transform.SetParent(pathObjectRoot.transform, false);
+                        obj.transform.position = path.GetPosition(i);
+                        obj.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                        obj.GetComponent<SpriteRenderer>().color = color;
+                    }
                 }
             }
         }

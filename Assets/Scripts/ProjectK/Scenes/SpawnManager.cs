@@ -27,9 +27,6 @@ namespace ProjectK
             Dictionary<int, SpawnWave> waveDict = new Dictionary<int, SpawnWave>();
             foreach (var locationSetting in setting.Locations)
             {
-                int x = locationSetting.X;
-                int y = locationSetting.Y;
-
                 foreach (var waveSetting in locationSetting.Waves)
                 {
                     SpawnWave wave;
@@ -40,8 +37,7 @@ namespace ProjectK
                     }
 
                     SpawnEntry entry = new SpawnEntry();
-                    entry.X = x;
-                    entry.Y = y;
+                    entry.PathIndex = locationSetting.PathIndex;
                     entry.DelayTime = waveSetting.DelayTime;
                     entry.IntervalTime = waveSetting.IntervalTime;
                     entry.SpawnTimes = waveSetting.SpawnTimes;
@@ -131,8 +127,7 @@ namespace ProjectK
 
         class SpawnEntry
         {
-            public int X;
-            public int Y;
+            public int PathIndex;
             public float DelayTime;
             public float IntervalTime;
             public int SpawnTimes;
@@ -157,7 +152,7 @@ namespace ProjectK
                 if (time < nextTime)
                     return false;
 
-                scene.CreateMonster(X, Y, TemplateID, SpawnPerTime);
+                scene.CreateMonster(PathIndex, TemplateID, SpawnPerTime);
                 nextTime = time + IntervalTime;
                 remainTimes -= 1;
 

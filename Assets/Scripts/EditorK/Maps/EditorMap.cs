@@ -91,18 +91,15 @@ namespace EditorK
             for (int i = 0; i < numPathDatas; ++i)
             {
                 MapPathSetting pathData = data.Paths[i];
+                List<Vector2> locations = new List<Vector2>(pathData.Waypoints.Length);
+                foreach (var point in pathData.Waypoints)
+                    locations.Add(new Vector2(point.X, point.Y));
+                Color color = new Color(pathData.ColorR, pathData.ColorG, pathData.ColorB);
+
                 if (i < numPathObjs)
-                {
-                    UpdatePath(i, new Vector2(pathData.StartX, pathData.StartY),
-                        new Vector2(pathData.EndX, pathData.EndY),
-                        new Color(pathData.ColorR, pathData.ColorG, pathData.ColorB));
-                }
+                    UpdatePath(i, locations, color);
                 else
-                {
-                    AddPath(new Vector2(pathData.StartX, pathData.StartY),
-                        new Vector2(pathData.EndX, pathData.EndY),
-                        new Color(pathData.ColorR, pathData.ColorG, pathData.ColorB));
-                }
+                    AddPath(locations, color);
             }
 
             for (int i = numPathDatas; i < numPathObjs; ++i)
@@ -121,10 +118,12 @@ namespace EditorK
             MapSetting data = MapDataProxy.Instance.Data;
             MapPathSetting pathData = data.Paths[index];
 
-            UpdatePath(index, new Vector2(pathData.StartX, pathData.StartY),
-                new Vector2(pathData.EndX, pathData.EndY),
-                new Color(pathData.ColorR, pathData.ColorG, pathData.ColorB));
+            List<Vector2> locations = new List<Vector2>(pathData.Waypoints.Length);
+            foreach (var point in pathData.Waypoints)
+                locations.Add(new Vector2(point.X, point.Y));
+            Color color = new Color(pathData.ColorR, pathData.ColorG, pathData.ColorB);
 
+            UpdatePath(index, locations, color);
             CalculatePath(index);
             ToggleShowPath(index, true, true);
         }

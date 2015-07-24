@@ -11,11 +11,10 @@ namespace ProjectK
     {
         public float MoveSpeed { get; private set; } // 移动速度，单位米/秒
 
-        private Vector2 startLocation;
-        private Vector2 endLocation;
-
-        private List<Vector2> waypoints;
-        private int nextWaypointIndex = -1;
+        private MapPath path;
+        private int nextWaypointIndex = 1;
+        private int nextPositionIndex;
+        private List<Vector3> wayPositions;
 
         public override void Init(ResourceLoader loader, EntitySetting template)
         {
@@ -25,27 +24,22 @@ namespace ProjectK
             MoveSpeed = setting.MoveSpeed;
         }
 
-        public void SetStartEnd(Vector2 startLocation, Vector2 endLocation)
+        public void SetPath(MapPath path)
         {
-            this.startLocation = startLocation;
-            this.endLocation = endLocation;
+            this.path = path;
         }
 
         public override void Activate(Scene scene)
         {
             base.Activate(scene);
 
-            if (waypoints == null)
-            {
-                waypoints = new List<Vector2>();
-                scene.Map.CalculatePath(startLocation, endLocation, waypoints);
-                nextWaypointIndex = 1;
-            }
+            if (wayPositions == null)
+                path.FindPathPosition(Location, nextWaypointIndex, out wayPositions, out nextPositionIndex);
 
             Vector3 position = gameObject.transform.position;
-            if (nextWaypointIndex < waypoints.Count)
+            if (nextPositionIndex < wayPositions.Count)
             {
-                Vector3 waypoint = MapUtils.LocationToPosition(waypoints[nextWaypointIndex]);
+                Vector3 waypoint = MapUtils.LocationToPosition(wayPositions[nextPositionIndex]);
                 Vector3 direction = waypoint - position;
                 float move = MoveSpeed * scene.DeltaTime;
                 if (direction.sqrMagnitude > move * move)
@@ -56,7 +50,7 @@ namespace ProjectK
                 else
                 {
                     position = waypoint;
-                    nextWaypointIndex += 1;
+                    nextPositionIndex += 1;
                 }
 
                 gameObject.transform.position = position;

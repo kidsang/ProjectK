@@ -19,8 +19,8 @@ namespace ProjectK
 
     public class SpawnLocationSetting
     {
-        public int X;
-        public int Y;
+        // 刷怪路线，索引至MapPath
+        public int PathIndex;
 
         // 刷怪波次，可以是不连续的，也可以有重复
         // 通过WaveIndex，指定波次，而非在数组中的位置
